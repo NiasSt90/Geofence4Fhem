@@ -1,14 +1,24 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    compileSdkVersion 26
     defaultConfig {
         applicationId "de.a0zero.geofence4fhem"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('apikeys.properties').newDataInputStream())
+        def apiKey = properties.getProperty('google_maps_api_key')
+        resValue "string", "api_key", apiKey
     }
     buildTypes {
         release {
@@ -19,9 +29,29 @@ android {
 }
 
 dependencies {
+    def androidSupportVersions = "26.+"
+    def lifecycle_version = "1.1.1"
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation "com.android.support:appcompat-v7:$androidSupportVersions"
+    implementation "com.android.support:design:$androidSupportVersions"
+
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+
+    annotationProcessor "android.arch.lifecycle:compiler:$lifecycle_version"
+    implementation "android.arch.lifecycle:common-java8:$lifecycle_version"
+
+
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    // Butterknife
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    // Google Services-Maps+Location
     implementation 'com.google.android.gms:play-services-maps:16.0.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

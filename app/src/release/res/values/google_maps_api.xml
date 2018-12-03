@@ -3,7 +3,7 @@
     TODO: Before you release your application, you need a Google Maps API key.
 
     To do this, you can either add your release key credentials to your existing
-    key, or create a new key.
+    key, or onCreate a new key.
 
     Note that this file specifies the API key for the release build target.
     If you have previously set up a key for the debug target with the debug signing certificate,
