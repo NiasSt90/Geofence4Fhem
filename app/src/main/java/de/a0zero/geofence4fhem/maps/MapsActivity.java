@@ -1,5 +1,6 @@
 package de.a0zero.geofence4fhem.maps;
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -10,6 +11,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -35,11 +38,12 @@ import de.a0zero.geofence4fhem.data.GeofenceDto;
 /**
  * Create/edit (no delete currently) Geofences on a map....<br/>
  * maps-api key needed. see build file where to put it.
- *
+ * <p>
  * finally the created geofences are save to (shared-prefs) {@link de.a0zero.geofence4fhem.data.GeofenceRepo}
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final String TAG = "MapsActivity";
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean locationPermissionGranted;
     private GoogleMap googleMap;
@@ -48,6 +52,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @BindView(R.id.fab_saveAll)
     FloatingActionButton fabSaveAll;
+
+    @BindView(R.id.delMarker)
+    ImageButton markerDelButton;
+
+    @BindView(R.id.editMarker)
+    ImageButton markerEditButton;
 
     private GeofencesViewModel model;
 
@@ -66,6 +76,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getLocationPermission();
         model = ViewModelProviders.of(this).get(GeofencesViewModel.class);
         fabSaveAll.setOnClickListener(event -> model.saveGeofences());
+        markerEditButton.setOnClickListener(this::onClickEdiutGeofenceButton);
+        markerDelButton.setOnClickListener(this::onClickDeleteGeofenceButton);
     }
 
 
@@ -73,8 +85,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
         this.googleMap.setOnMapClickListener(this::onMapClickListener);
+        this.googleMap.setOnMapLongClickListener(this::onMapLongClickListener);
         this.googleMap.setOnMarkerClickListener(this::onMarkerClickListener);
-        this.googleMap.setOnInfoWindowLongClickListener(this::onInfoWindowLongClickListener);
         this.googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker marker) {
@@ -97,6 +109,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
         googleMap.getUiSettings().setAllGesturesEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
 
         markerMap = new WeakHashMap<>();
         circleMap = new WeakHashMap<>();
@@ -114,8 +127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             marker.setSnippet(geofence.getName());
             marker.setPosition(geofence.getPosition());
             marker.showInfoWindow();
-        }
-        else {
+        } else {
             marker = googleMap.addMarker(geofence.createMarkerOptions());
             marker.setTag(geofence);
             markerMap.put(geofence.getId(), marker);
@@ -124,31 +136,59 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Circle circle = circleMap.get(geofence.getId());
         if (circle != null) {
             circle.setRadius(geofence.getRadius());
-        }
-        else {
+        } else {
             circle = googleMap.addCircle(geofence.createCircleOptions());
             circleMap.put(geofence.getId(), circle);
         }
     }
 
     private void onMapClickListener(LatLng position) {
+        markerEditButton.setVisibility(View.INVISIBLE);
+        markerDelButton.setVisibility(View.INVISIBLE);
+    }
+
+    private void onMapLongClickListener(LatLng position) {
         Log.d("DEBUG", "Clicked on location:" + position.latitude + "/" + position.longitude);
+        markerEditButton.setVisibility(View.INVISIBLE);
+        markerDelButton.setVisibility(View.INVISIBLE);
         model.create(new GeofenceDto(position));
         new CreateZoneDialog().show(getSupportFragmentManager(), "CreateZone");
     }
 
     private boolean onMarkerClickListener(Marker marker) {
         fabSaveAll.setEnabled(true);
-        return false;
+        marker.showInfoWindow();
+        model.select((GeofenceDto) marker.getTag());
+        markerEditButton.setTag(marker.getTag());
+        markerEditButton.setVisibility(View.VISIBLE);
+        markerDelButton.setTag(marker.getTag());
+        markerDelButton.setVisibility(View.VISIBLE);
+        return true;
     }
 
-    private void onInfoWindowLongClickListener(Marker marker) {
-        model.select((GeofenceDto) marker.getTag());
+    private void onClickEdiutGeofenceButton(View view) {
         new CreateZoneDialog().show(getSupportFragmentManager(), "UpdateZone");
     }
 
+    private void onClickDeleteGeofenceButton(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Geofence Löschen")
+                .setMessage("Möchten sie den Geofence löschen?")
+                .setPositiveButton("delete", (dialog, id) -> deleteSelectedGeofence())
+                .setNegativeButton("cancel", (dialog, id) -> Log.d(TAG, "delete aborted"));
+        builder.show();
+    }
 
-
+    private void deleteSelectedGeofence() {
+        GeofenceDto selectedGeofence = model.getSelected().getValue();
+        if (selectedGeofence != null) {
+            Marker marker = markerMap.get(selectedGeofence.getId());
+            if (marker != null) marker.remove();
+            Circle circle = circleMap.get(selectedGeofence.getId());
+            if (circle != null) circle.remove();
+            model.delete(selectedGeofence);
+        }
+    }
 
     private void createMarkers(List<GeofenceDto> geofences) {
         for (GeofenceDto geofence : geofences) {
@@ -163,8 +203,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 locationResult.addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         lastKnownLocation = task.getResult();
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), 16));
+                        if (lastKnownLocation != null) {
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()), 16));
+                        }
                     } else {
                         Log.e("Maps", "Exception: %s", task.getException());
                         googleMap.getUiSettings().setMyLocationButtonEnabled(false);

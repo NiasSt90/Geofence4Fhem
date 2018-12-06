@@ -33,6 +33,10 @@ public class GeofenceRepo {
         geofences.add(geofence);
     }
 
+    public void delete(GeofenceDto geofenceDto) {
+        geofences.remove(geofenceDto);
+    }
+
     public boolean exists(GeofenceDto geofence) {
         return geofences.contains(geofence);
     }

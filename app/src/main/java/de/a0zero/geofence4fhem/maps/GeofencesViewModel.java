@@ -40,6 +40,12 @@ class GeofencesViewModel extends AndroidViewModel {
         selected.setValue(geofence);
     }
 
+    void delete(GeofenceDto geofence) {
+        if (geofence != null) {
+            geofenceRepo.delete(geofence);
+        }
+    }
+
     MutableLiveData<GeofenceDto> getSelected() {
         return selected;
     }
