@@ -30,6 +30,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import de.a0zero.geofence4fhem.BuildConfig;
 import de.a0zero.geofence4fhem.R;
+import de.a0zero.geofence4fhem.actions.EditFhemNotifyActivity;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import de.a0zero.geofence4fhem.maps.MapsActivity;
 import de.a0zero.geofence4fhem.transition.GeofenceBroadcastReceiver;
@@ -66,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.gotoMaps)
                 .setOnClickListener(e -> startActivity(new Intent(this, MapsActivity.class)));
+        findViewById(R.id.gotoActions)
+                .setOnClickListener(e -> startActivity(new Intent(this, EditFhemNotifyActivity.class)));
     }
 
     public void addGeofencesButtonHandler(View view) {

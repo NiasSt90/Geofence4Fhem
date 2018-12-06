@@ -1,11 +1,18 @@
 <resources>
     <string name="app_name">Geofence4Fhem</string>
-    <string name="title_activity_maps">Map</string>
     <string name="title_activity_main">Geofence für FHEM</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_fhem">FHEM Aufruf</string>
 
     <string name="zoneTitle">Anzeigename der Zone</string>
     <string name="zoneName">FHEM Name der Zone</string>
     <string name="radius">Radius</string>
+
+    <string name="fhemUrl">URL on FHEM like http://myfhem.de/fhem/geo</string>
+    <string name="fhemUsername">Username (optional)</string>
+    <string name="fhemPassword">Password (optional)</string>
+    <string name="fhemSave">Speichern</string>
+
 
     <string name="insufficient_permissions">Insufficient permissions.</string>
     <string name="permission_rationale">Location permission is needed for core functionality</string>
