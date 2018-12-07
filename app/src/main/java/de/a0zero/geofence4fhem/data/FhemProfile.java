@@ -1,6 +1,6 @@
 package de.a0zero.geofence4fhem.data;
 
-public class FhemProfile {
+public class FhemProfile implements Profile {
 
     private String fhemUrl;
 
@@ -30,5 +30,10 @@ public class FhemProfile {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public ProfileType type() {
+        return ProfileType.FHEM_NOTIFY;
     }
 }
