@@ -28,19 +28,30 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.maps.model.LatLng;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import de.a0zero.geofence4fhem.R;
+import de.a0zero.geofence4fhem.actions.GeofenceAction;
 import de.a0zero.geofence4fhem.app.AppController;
 import de.a0zero.geofence4fhem.app.MainActivity;
+import de.a0zero.geofence4fhem.data.FhemProfile;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
+import de.a0zero.geofence4fhem.data.Profile;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.internal.schedulers.SchedulerMultiWorkerSupport;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Receiver for geofence transition and location changes. send notification messages...
@@ -67,7 +78,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         if (action != null) {
             switch (action) {
                 case ACTION_GEOFENCE_UPDATE:
-                    onHandleGeofenceIntent(intent);
+                    onHandleGeofenceIntent(context, intent);
                     break;
                 case ACTION_LOCATION_UPDATE:
                     onHandleLocationIntent(intent);
@@ -76,7 +87,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    protected void onHandleGeofenceIntent(Intent intent) {
+    protected void onHandleGeofenceIntent(Context context, Intent intent) {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = GeofenceErrorMessages.getErrorString(AppController.instance(),
@@ -98,12 +109,43 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
                 if (fence != null) {
                     triggeredFences.add(fence);
                     msgBuilder.append(fence.getName()).append(" ");
+                    executeProfiles(context, geofencingEvent, fence);
                 }
             }
             sendNotification("Geofence", 1, msgBuilder.toString());
             Log.i(TAG, "Geofence Update:" + msgBuilder.toString());
         } else {
             Log.e(TAG, AppController.instance().getString(R.string.geofence_transition_invalid_type, geofenceTransition));
+        }
+    }
+
+    private void executeProfiles(Context context, GeofencingEvent geofencingEvent, GeofenceDto geofenceDto) {
+
+        Location triggeringLocation = geofencingEvent.getTriggeringLocation();
+        LatLng currentPosition = new LatLng(triggeringLocation.getLatitude(), triggeringLocation.getLongitude());
+        List<FhemProfile> profiles = AppController.geofenceActionRepo().getProfilesForGeofence(geofenceDto.getId());
+
+        for (Profile profile : profiles) {
+            Class<? extends GeofenceAction> geofenceActionClass = profile.getType().getGeofenceActionClass();
+            if (geofenceActionClass == null) {
+                Log.d(TAG, "No action class for profile " + profile);
+                continue;
+            }
+            try {
+                GeofenceAction<Profile> caller = geofenceActionClass.getConstructor(Context.class).newInstance(context);
+                Observable<GeofenceAction.ActionResponse> action = null;
+                if (geofencingEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_ENTER) {
+                    action = caller.enter(geofenceDto, profile, currentPosition);
+                } else if (geofencingEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_EXIT) {
+                    action = caller.leave(geofenceDto, profile, currentPosition);
+                }
+                if (action != null)
+                    action.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((n) -> Log.d(TAG, "RESPONSE: " + n.message()),
+                                    (e) -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show());
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -115,21 +157,19 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             StringBuilder msgBuilder = new StringBuilder();
             if (locations.isEmpty()) {
                 msgBuilder.append("Unknown location");
-            }
-            else {
+            } else {
                 for (Location location : locations) {
-                msgBuilder.append("(");
-                msgBuilder.append(location.getLatitude());
-                msgBuilder.append(", ");
-                msgBuilder.append(location.getLongitude());
-                msgBuilder.append(")");
-                msgBuilder.append("\n");
+                    msgBuilder.append("(");
+                    msgBuilder.append(location.getLatitude());
+                    msgBuilder.append(", ");
+                    msgBuilder.append(location.getLongitude());
+                    msgBuilder.append(")");
+                    msgBuilder.append("\n");
                 }
             }
             sendNotification("Locations", 2, msgBuilder.toString());
             Log.i(TAG, "Location Update:" + msgBuilder.toString());
-        }
-        else {
+        } else {
             Log.e(TAG, "No LocationResult found in intent....");
         }
     }

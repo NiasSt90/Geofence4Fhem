@@ -2,7 +2,9 @@ package de.a0zero.geofence4fhem.app;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +25,8 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +35,9 @@ import butterknife.ButterKnife;
 import de.a0zero.geofence4fhem.BuildConfig;
 import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.actions.EditFhemNotifyActivity;
+import de.a0zero.geofence4fhem.data.GeofenceDatabase;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
+import de.a0zero.geofence4fhem.data.GeofenceRepo;
 import de.a0zero.geofence4fhem.maps.MapsActivity;
 import de.a0zero.geofence4fhem.transition.GeofenceBroadcastReceiver;
 import de.a0zero.geofence4fhem.transition.GeofenceErrorMessages;
@@ -243,17 +249,14 @@ public class MainActivity extends AppCompatActivity {
                 // when permissions are denied. Otherwise, your app could appear unresponsive to
                 // touches or interactions which have required permissions.
                 showSnackbar(R.string.permission_denied_explanation, R.string.settings,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // Build intent that displays the App settings screen.
-                                Intent intent = new Intent();
-                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
-                                intent.setData(uri);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
+                        view -> {
+                            // Build intent that displays the App settings screen.
+                            Intent intent = new Intent();
+                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+                            intent.setData(uri);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
                         });
                 //mPendingGeofenceTask = PendingGeofenceTask.NONE;
             }

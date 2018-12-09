@@ -2,15 +2,16 @@
     <string name="app_name">Geofence4Fhem</string>
     <string name="title_activity_main">Geofence für FHEM</string>
     <string name="title_activity_maps">Map</string>
-    <string name="title_activity_fhem">FHEM Aufruf</string>
+    <string name="title_activity_fhem">edit FHEM settings</string>
 
     <string name="zoneTitle">Anzeigename der Zone</string>
     <string name="zoneName">FHEM Name der Zone</string>
     <string name="radius">Radius</string>
 
-    <string name="fhemUrl">URL on FHEM like http://myfhem.de/fhem/geo</string>
+    <string name="fhemUrl">FHEM URL (https://myfhem.de/fhem/geo)</string>
     <string name="fhemUsername">Username (optional)</string>
     <string name="fhemPassword">Password (optional)</string>
+    <string name="fhemDeviceID">Geofence device identifier</string>
     <string name="fhemSave">Speichern</string>
 
 
@@ -42,5 +43,12 @@
     <string name="geofence_transition_invalid_type">
         Geofence transition error: invalid transition type %1$d
     </string>
+
+
+    <string name="phone_state_permission_rationale">access to your device uuid needed</string>
+    <string name="phone_state_permission_denied_explanation">Access to device-uuid was denied.
+        You need to allow the access or manually enter an unique id and use this id in your fhem geofancy/roommate setup (devAlias/rr_geofenceUUIDs)</string>
+
+    <string name="geofence_position">Geofence position</string>
 
 </resources>

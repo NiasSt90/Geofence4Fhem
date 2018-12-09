@@ -1,6 +1,9 @@
 package de.a0zero.geofence4fhem.data;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -10,8 +13,11 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
+@Entity
 public class GeofenceDto implements Serializable {
 
+    @PrimaryKey
+    @NonNull
     private String id;
 
     private String title;
@@ -25,6 +31,10 @@ public class GeofenceDto implements Serializable {
     public GeofenceDto(LatLng position) {
         this.id = UUID.randomUUID().toString();
         this.position = position;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getId() {

@@ -1,12 +1,21 @@
 package de.a0zero.geofence4fhem.data;
 
-public class FhemProfile implements Profile {
+import android.arch.persistence.room.Entity;
+
+@Entity
+public class FhemProfile extends Profile {
 
     private String fhemUrl;
 
     private String username;
 
     private String password;
+
+    private String deviceUUID;
+
+    public FhemProfile() {
+        super(ProfileType.FHEM_NOTIFY);
+    }
 
     public String getFhemUrl() {
         return fhemUrl;
@@ -32,8 +41,11 @@ public class FhemProfile implements Profile {
         this.password = password;
     }
 
-    @Override
-    public ProfileType type() {
-        return ProfileType.FHEM_NOTIFY;
+    public String getDeviceUUID() {
+        return deviceUUID;
+    }
+
+    public void setDeviceUUID(String deviceUUID) {
+        this.deviceUUID = deviceUUID;
     }
 }

@@ -29,7 +29,7 @@ class GeofencesViewModel extends AndroidViewModel {
     }
 
     void saveGeofences() {
-        geofenceRepo.saveAll();
+        geofenceRepo.updateAll(geofences.getValue());
     }
 
     void create(GeofenceDto geofence) {
@@ -43,6 +43,7 @@ class GeofencesViewModel extends AndroidViewModel {
     void delete(GeofenceDto geofence) {
         if (geofence != null) {
             geofenceRepo.delete(geofence);
+            geofences.getValue().remove(geofence);
         }
     }
 
@@ -52,7 +53,8 @@ class GeofencesViewModel extends AndroidViewModel {
 
 
     void updated(GeofenceDto geofence) {
-        if (!geofenceRepo.exists(geofence)) {
+        int affectedRows = geofenceRepo.update(geofence);
+        if (affectedRows == 0) {
             geofenceRepo.add(geofence);
         }
         changed.setValue(geofence);

@@ -1,6 +1,8 @@
 package de.a0zero.geofence4fhem.data;
 
 import de.a0zero.geofence4fhem.actions.EditFhemNotifyActivity;
+import de.a0zero.geofence4fhem.actions.GeofenceAction;
+import de.a0zero.geofence4fhem.actions.GeofenceActionInformFhem;
 
 public enum ProfileType {
 
@@ -11,8 +13,8 @@ public enum ProfileType {
         }
 
         @Override
-        public Class<?> getGeofenceActionClass() {
-            return null;
+        public Class<? extends GeofenceAction> getGeofenceActionClass() {
+            return GeofenceActionInformFhem.class;
         }
     },
 
@@ -23,13 +25,13 @@ public enum ProfileType {
         }
 
         @Override
-        public Class<?> getGeofenceActionClass() {
+        public Class<? extends GeofenceAction> getGeofenceActionClass() {
             return null;
         }
     };
 
     public abstract Class<?> getEditorActionClass();
 
-    public abstract Class<?> getGeofenceActionClass();
+    public abstract Class<? extends GeofenceAction> getGeofenceActionClass();
 
 }

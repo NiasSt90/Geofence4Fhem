@@ -1,5 +1,11 @@
 package de.a0zero.geofence4fhem.data;
 
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
+import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
+import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -8,48 +14,25 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 
-public class GeofenceRepo {
+@Dao
+public interface GeofenceRepo {
 
-    public static final String DB_KEY_GEOFENCES = "geofences";
-    private final Context context;
 
-    private List<GeofenceDto> geofences;
-    private final Gson gson;
-    private final SharedPreferences sharedPreferences;
+    @Query("SELECT * FROM GeofenceDto")
+    List<GeofenceDto> listAll();
 
-    public GeofenceRepo(Context context) {
-        this.context = context;
-        gson = new Gson();
-        sharedPreferences = context.getSharedPreferences(GeofenceRepo.class.getName(), Context.MODE_PRIVATE);
-        geofences = gson.fromJson(sharedPreferences.getString(DB_KEY_GEOFENCES, "[]"),
-                new TypeToken<List<GeofenceDto>>(){}.getType());
-    }
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void add(GeofenceDto geofence);
 
-    public List<GeofenceDto> listAll() {
-        return geofences;
-    }
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    int update(GeofenceDto geofenceDto);
 
-    public void add(GeofenceDto geofence) {
-        geofences.add(geofence);
-    }
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    void updateAll(List<GeofenceDto> geofence);
 
-    public void delete(GeofenceDto geofenceDto) {
-        geofences.remove(geofenceDto);
-    }
+    @Delete
+    void delete(GeofenceDto geofenceDto);
 
-    public boolean exists(GeofenceDto geofence) {
-        return geofences.contains(geofence);
-    }
-
-    public void saveAll() {
-        String json = gson.toJson(geofences);
-        sharedPreferences.edit().putString(DB_KEY_GEOFENCES, json).apply();
-    }
-
-    public GeofenceDto findByID(String requestId) {
-        for (GeofenceDto geofenceDto : geofences) {
-            if (geofenceDto.getId().equals(requestId)) return geofenceDto;
-        }
-        return null;
-    }
+    @Query("SELECT * FROM GeofenceDto WHERE id = :requestId")
+    GeofenceDto findByID(String requestId);
 }

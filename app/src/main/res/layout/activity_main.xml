@@ -7,26 +7,26 @@
         android:id="@+id/gotoMaps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Maps" />
+        android:text="Geofences" />
 
     <Button
         android:id="@+id/gotoActions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Actions" />
+        android:text="Profiles" />
 
     <Button
         android:id="@+id/addFences"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="addGeofencesButtonHandler"
-        android:text="Add Geofences" />
+        android:text="Register Geofences" />
     <Button
         android:id="@+id/delFences"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="removeGeofencesButtonHandler"
-        android:text="Remove Geofences" />
+        android:text="Unregister Geofences" />
 
     <Button
         android:id="@+id/addRequestUpdate"
