@@ -3,6 +3,7 @@ package de.a0zero.geofence4fhem.app;
 import android.app.Application;
 import android.util.Log;
 
+import de.a0zero.geofence4fhem.data.GeofenceProfileStateRepo;
 import de.a0zero.geofence4fhem.data.GeofenceProfilesRepo;
 import de.a0zero.geofence4fhem.data.GeofenceDatabase;
 import de.a0zero.geofence4fhem.data.GeofenceRepo;
@@ -29,6 +30,10 @@ public class AppController extends Application {
     public static GeofenceProfilesRepo geofenceActionRepo() {
         return GeofenceDatabase.getInstance(mInstance).geofenceProfilesRepo();
     }
+
+    public static GeofenceProfileStateRepo geofenceStateRepo() {
+    	return GeofenceDatabase.getInstance(mInstance).geofenceProfileStateRepo();
+	 }
 
 
     @Override

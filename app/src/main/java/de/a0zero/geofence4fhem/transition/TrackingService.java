@@ -14,10 +14,21 @@ import android.support.v4.app.NotificationCompat;
 
 import de.a0zero.geofence4fhem.R;
 
+
+/**
+ * Stupid ongoing foreground service...<a href="https://developer.android.com/about/versions/oreo/background-location-limits">only to fulfill oreo changes</a>
+ * and get enter/leave/dwell intents for my registered geofences.
+ *
+ * TODO: i'm still investigating if it is really needed or if the {@link GeofenceBroadcastReceiver} will receive the
+ * intents without this foreground service...
+ */
 public class TrackingService extends Service {
 
 
     public static final String CHANNEL_LOCATION_TRACKING = "LocationTracking";
+
+    public static final int LOCATION_TRACKING_NOTIFY_ID = 1;
+
     private NotificationManager notificationManager;
 
     @Override
@@ -35,24 +46,26 @@ public class TrackingService extends Service {
         builder.setSmallIcon(R.drawable.baseline_location_on_white_24)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.baseline_location_on_white_48))
                 .setColor(Color.GREEN)
-                .setContentTitle("Foreground Tracking Service")
-                .setContentText(getString(R.string.geofence_transition_notification_text));
-
+                .setContentTitle("Tracking Service initializing...");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setChannelId(CHANNEL_LOCATION_TRACKING);
         }
         builder.setAutoCancel(false);
         builder.setOngoing(true);
-
-        startForeground(1, builder.build());
+        startForeground(LOCATION_TRACKING_NOTIFY_ID, builder.build());
+        startService(new Intent(this, UpdateNotificationIntentService.class));
     }
 
 
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		return super.onStartCommand(intent, flags, startId);
+	}
 
 
-    @Override
+	@Override
     public IBinder onBind(Intent intent) {
-        return musicBind;
+        return binder;
     }
 
     @Override
@@ -61,7 +74,7 @@ public class TrackingService extends Service {
     }
 
 
-    private final IBinder musicBind = new TrackingServiceBinder();
+    private final IBinder binder = new TrackingServiceBinder();
 
     public class TrackingServiceBinder extends Binder {
         public TrackingService getService() {

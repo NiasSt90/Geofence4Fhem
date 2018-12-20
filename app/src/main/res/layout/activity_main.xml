@@ -29,20 +29,6 @@
         android:text="Unregister Geofences" />
 
     <Button
-        android:id="@+id/addRequestUpdate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="addLocationUpdateRequests"
-        android:text="Start Request Location Updates" />
-
-    <Button
-        android:id="@+id/removeRequestUpdate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="removeLocationUpdateRequests"
-        android:text="Stop Request Location Updates" />
-
-    <Button
         android:id="@+id/startTrackingService"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

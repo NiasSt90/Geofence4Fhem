@@ -2,6 +2,14 @@ package de.a0zero.geofence4fhem.data;
 
 import android.arch.persistence.room.Entity;
 
+
+/**
+ * a profile with some settings, needed for executing on enter/leave of an {@link de.a0zero.geofence4fhem.actions.GeofenceAction} implementation.
+ *
+ * TODO: because no JOIN-TABLE inheritance not possible in sqlite we need to merge together FhemProfile and Profile into a single class.
+ * Profile then can be used for other stuff (change RingTone-Settings, toggle-WLAN/..) and therefore the attributes here must
+ * be stored into a json structure blob...
+ */
 @Entity
 public class FhemProfile extends Profile {
 

@@ -5,6 +5,9 @@ import android.arch.persistence.room.TypeConverter;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
+import java.util.Date;
+
+
 public class TypeConvertes {
 
     private static Gson gson = new Gson();
@@ -30,4 +33,13 @@ public class TypeConvertes {
         return gson.fromJson(value, LatLng.class);
     }
 
+	@TypeConverter
+	public static Date toDate(Long value) {
+		return value == null ? null : new Date(value);
+	}
+
+	@TypeConverter
+	public static Long toLong(Date value) {
+		return value == null ? null : value.getTime();
+	}
 }

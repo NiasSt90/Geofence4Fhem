@@ -6,6 +6,11 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.support.annotation.NonNull;
 
+
+/**
+ * assign a profile {@link FhemProfile} to execute ({@link de.a0zero.geofence4fhem.actions.GeofenceAction}) on enter/leave
+ * of the given {@link GeofenceDto}
+ */
 @Entity(
         primaryKeys = { "profileId", "geofenceId" },
         foreignKeys = {

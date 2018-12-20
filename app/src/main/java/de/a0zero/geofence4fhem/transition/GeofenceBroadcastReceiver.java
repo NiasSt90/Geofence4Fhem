@@ -46,203 +46,228 @@ import de.a0zero.geofence4fhem.app.AppController;
 import de.a0zero.geofence4fhem.app.MainActivity;
 import de.a0zero.geofence4fhem.data.FhemProfile;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
+import de.a0zero.geofence4fhem.data.GeofenceProfileState;
 import de.a0zero.geofence4fhem.data.Profile;
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.internal.schedulers.SchedulerMultiWorkerSupport;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.DisposableSubscriber;
+
 
 /**
  * Receiver for geofence transition and location changes. send notification messages...
  */
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "GeofenceBroadcastRcv";
+	private static final String TAG = "GeofenceBroadcastRcv";
 
-    public static final String ACTION_GEOFENCE_UPDATE = "GeofenceUpdate";
-    public static final String ACTION_LOCATION_UPDATE = "LocationUpdate";
+	public static final String ACTION_GEOFENCE_UPDATE = "GeofenceUpdate";
 
-
-    /**
-     * Receives incoming intents.
-     *
-     * @param context the application context.
-     * @param intent  sent by Location Services. This Intent is provided to Location
-     *                Services (inside a PendingIntent) when addGeofences() is called.
-     */
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        // Enqueues a JobIntentService passing the context and intent as parameters
-        String action = intent.getAction();
-        if (action != null) {
-            switch (action) {
-                case ACTION_GEOFENCE_UPDATE:
-                    onHandleGeofenceIntent(context, intent);
-                    break;
-                case ACTION_LOCATION_UPDATE:
-                    onHandleLocationIntent(intent);
-                    break;
-            }
-        }
-    }
-
-    protected void onHandleGeofenceIntent(Context context, Intent intent) {
-        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
-        if (geofencingEvent.hasError()) {
-            String errorMessage = GeofenceErrorMessages.getErrorString(AppController.instance(),
-                    geofencingEvent.getErrorCode());
-            Log.e(TAG, errorMessage);
-            return;
-        }
-        int geofenceTransition = geofencingEvent.getGeofenceTransition();
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-
-            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-
-            Set<GeofenceDto> triggeredFences = new HashSet<>();
-            StringBuilder msgBuilder = new StringBuilder();
-            msgBuilder.append(getTransitionString(geofenceTransition)).append(" Zone(s):");
-            for (Geofence geofence : triggeringGeofences) {
-                GeofenceDto fence = AppController.geofenceRepo().findByID(geofence.getRequestId());
-                if (fence != null) {
-                    triggeredFences.add(fence);
-                    msgBuilder.append(fence.getName()).append(" ");
-                    executeProfiles(context, geofencingEvent, fence);
-                }
-            }
-            sendNotification("Geofence", 1, msgBuilder.toString());
-            Log.i(TAG, "Geofence Update:" + msgBuilder.toString());
-        } else {
-            Log.e(TAG, AppController.instance().getString(R.string.geofence_transition_invalid_type, geofenceTransition));
-        }
-    }
-
-    private void executeProfiles(Context context, GeofencingEvent geofencingEvent, GeofenceDto geofenceDto) {
-
-        Location triggeringLocation = geofencingEvent.getTriggeringLocation();
-        LatLng currentPosition = new LatLng(triggeringLocation.getLatitude(), triggeringLocation.getLongitude());
-        List<FhemProfile> profiles = AppController.geofenceActionRepo().getProfilesForGeofence(geofenceDto.getId());
-
-        for (Profile profile : profiles) {
-            Class<? extends GeofenceAction> geofenceActionClass = profile.getType().getGeofenceActionClass();
-            if (geofenceActionClass == null) {
-                Log.d(TAG, "No action class for profile " + profile);
-                continue;
-            }
-            try {
-                GeofenceAction<Profile> caller = geofenceActionClass.getConstructor(Context.class).newInstance(context);
-                Observable<GeofenceAction.ActionResponse> action = null;
-                if (geofencingEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_ENTER) {
-                    action = caller.enter(geofenceDto, profile, currentPosition);
-                } else if (geofencingEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_EXIT) {
-                    action = caller.leave(geofenceDto, profile, currentPosition);
-                }
-                if (action != null)
-                    action.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                            .subscribe((n) -> Log.d(TAG, "RESPONSE: " + n.message()),
-                                    (e) -> Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show());
-            } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    protected void onHandleLocationIntent(Intent intent) {
-        LocationResult result = LocationResult.extractResult(intent);
-        if (result != null) {
-            List<Location> locations = result.getLocations();
-
-            StringBuilder msgBuilder = new StringBuilder();
-            if (locations.isEmpty()) {
-                msgBuilder.append("Unknown location");
-            } else {
-                for (Location location : locations) {
-                    msgBuilder.append("(");
-                    msgBuilder.append(location.getLatitude());
-                    msgBuilder.append(", ");
-                    msgBuilder.append(location.getLongitude());
-                    msgBuilder.append(")");
-                    msgBuilder.append("\n");
-                }
-            }
-            sendNotification("Locations", 2, msgBuilder.toString());
-            Log.i(TAG, "Location Update:" + msgBuilder.toString());
-        } else {
-            Log.e(TAG, "No LocationResult found in intent....");
-        }
-    }
-
-    /**
-     * Posts a notification in the notification bar when a transition is detected.
-     * If the user clicks the notification, control goes to the MainActivity.
-     */
-    private void sendNotification(String channel, int id, String notificationDetails) {
-        // Get an instance of the Notification manager
-        AppController context = AppController.instance();
-        NotificationManager mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Android O requires a Notification Channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = context.getString(R.string.app_name);
-            // Create the channel for the notification
-            NotificationChannel mChannel =
-                    new NotificationChannel(channel, name, NotificationManager.IMPORTANCE_DEFAULT);
-            // Set the Notification Channel for the Notification Manager.
-            mNotificationManager.createNotificationChannel(mChannel);
-        }
-
-        // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(context, MainActivity.class);
-
-        // Construct a task stack.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        // Add the main Activity to the task stack as the parent.
-        stackBuilder.addParentStack(MainActivity.class);
-        // Push the content Intent onto the stack.
-        stackBuilder.addNextIntent(notificationIntent);
-        // Get a PendingIntent containing the entire back stack.
-        PendingIntent notificationPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Get a notification builder that's compatible with platform versions >= 4
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        // Define the notification settings.
-        builder.setSmallIcon(R.drawable.baseline_location_on_white_24)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.baseline_location_on_white_48))
-                .setColor(Color.RED)
-                .setContentTitle(notificationDetails)
-                .setContentText(context.getString(R.string.geofence_transition_notification_text))
-                .setContentIntent(notificationPendingIntent);
-
-        // Set the Channel ID for Android O.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder.setChannelId(channel); // Channel ID
-        }
-
-        // Dismiss notification once the user touches it.
-        builder.setAutoCancel(true);
-
-        // Issue the notification
-        mNotificationManager.notify(id, builder.build());
-    }
+	public static final String ACTION_LOCATION_UPDATE = "LocationUpdate";
 
 
-    /**
-     * Maps geofence transition types to their human-readable equivalents.
-     *
-     * @param transitionType A transition type constant defined in Geofence
-     * @return A String indicating the type of transition
-     */
-    private String getTransitionString(int transitionType) {
-        switch (transitionType) {
-            case Geofence.GEOFENCE_TRANSITION_ENTER:
-                return AppController.instance().getString(R.string.geofence_transition_entered);
-            case Geofence.GEOFENCE_TRANSITION_EXIT:
-                return AppController.instance().getString(R.string.geofence_transition_exited);
-            default:
-                return AppController.instance().getString(R.string.unknown_geofence_transition);
-        }
-    }
+	/**
+	 * Receives incoming intents.
+	 *
+	 * @param context the application context.
+	 * @param intent  sent by Location Services. This Intent is provided to Location
+	 *                Services (inside a PendingIntent) when addGeofences() is called.
+	 */
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		// Enqueues a JobIntentService passing the context and intent as parameters
+		String action = intent.getAction();
+		if (action != null) {
+			switch (action) {
+				case ACTION_GEOFENCE_UPDATE:
+					onHandleGeofenceIntent(context, intent);
+					break;
+				case ACTION_LOCATION_UPDATE:
+					onHandleLocationIntent(intent);
+					break;
+			}
+		}
+	}
+
+
+	protected void onHandleGeofenceIntent(Context context, Intent intent) {
+		GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+		if (geofencingEvent.hasError()) {
+			String errorMessage = GeofenceErrorMessages.getErrorString(AppController.instance(),
+					geofencingEvent.getErrorCode());
+			Log.e(TAG, errorMessage);
+			return;
+		}
+		int geofenceTransition = geofencingEvent.getGeofenceTransition();
+		if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
+			 geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+
+			List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+
+			Set<GeofenceDto> triggeredFences = new HashSet<>();
+			StringBuilder msgBuilder = new StringBuilder();
+			msgBuilder.append(getTransitionString(geofenceTransition)).append(" Zone(s):");
+			for (Geofence geofence : triggeringGeofences) {
+				GeofenceDto fence = AppController.geofenceRepo().findByID(geofence.getRequestId());
+				if (fence != null) {
+					triggeredFences.add(fence);
+					msgBuilder.append(fence.getName()).append(" ");
+					executeProfiles(context, geofencingEvent, fence);
+				}
+			}
+			context.startService(new Intent(context, UpdateNotificationIntentService.class));
+			//sendNotification("Geofence", 1, msgBuilder.toString());
+			Log.i(TAG, "Geofence Update:" + msgBuilder.toString());
+		}
+		else {
+			Log.e(TAG, AppController.instance().getString(R.string.geofence_transition_invalid_type, geofenceTransition));
+		}
+	}
+
+
+	private void executeProfiles(Context context, GeofencingEvent geofencingEvent, GeofenceDto geofenceDto) {
+
+		Location triggeringLocation = geofencingEvent.getTriggeringLocation();
+		LatLng currentPosition = new LatLng(triggeringLocation.getLatitude(), triggeringLocation.getLongitude());
+		List<FhemProfile> profiles = AppController.geofenceActionRepo().getProfilesForGeofence(geofenceDto.getId());
+
+		CompositeDisposable compositeDisposable = new CompositeDisposable();
+		for (FhemProfile profile : profiles) {
+			Class<? extends GeofenceAction> geofenceActionClass = profile.getType().getGeofenceActionClass();
+			if (geofenceActionClass == null) {
+				Log.d(TAG, "No action class for profile " + profile);
+				continue;
+			}
+			try {
+				GeofenceAction<FhemProfile> caller = geofenceActionClass.getConstructor(Context.class).newInstance(context);
+				Observable<GeofenceAction.ActionResponse> action = null;
+				if (geofencingEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_ENTER) {
+					action = caller.enter(geofenceDto, profile, currentPosition);
+				}
+				else if (geofencingEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_EXIT) {
+					action = caller.leave(geofenceDto, profile, currentPosition);
+				}
+				if (action != null) {
+					GeofenceProfileState state =
+							new GeofenceProfileState(profile.getID(), geofenceDto.getId(), currentPosition,
+									geofencingEvent.getGeofenceTransition());
+					compositeDisposable.add(
+							action.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+							.subscribe(
+									response -> AppController.geofenceStateRepo().add(state.assignResponse(response)),
+									error -> AppController.geofenceStateRepo().add(state.assignError(error)))
+					);
+				}
+			}
+			catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+				Log.e(TAG, e.getMessage(), e);
+				Toast.makeText(context, "Can't execute Action:" + e.getMessage(), Toast.LENGTH_LONG).show();
+			}
+		}
+		//TODO: wait until all subscriptions are done and what about re-try the actions multiple time (network failures)
+	}
+
+
+
+	protected void onHandleLocationIntent(Intent intent) {
+		LocationResult result = LocationResult.extractResult(intent);
+		if (result != null) {
+			List<Location> locations = result.getLocations();
+
+			StringBuilder msgBuilder = new StringBuilder();
+			if (locations.isEmpty()) {
+				msgBuilder.append("Unknown location");
+			}
+			else {
+				for (Location location : locations) {
+					msgBuilder.append("(");
+					msgBuilder.append(location.getLatitude());
+					msgBuilder.append(", ");
+					msgBuilder.append(location.getLongitude());
+					msgBuilder.append(")");
+					msgBuilder.append("\n");
+				}
+			}
+			sendNotification("Locations", 2, msgBuilder.toString());
+			Log.i(TAG, "Location Update:" + msgBuilder.toString());
+		}
+		else {
+			Log.e(TAG, "No LocationResult found in intent....");
+		}
+	}
+
+
+	/**
+	 * Posts a notification in the notification bar when a transition is detected.
+	 * If the user clicks the notification, control goes to the MainActivity.
+	 */
+	private void sendNotification(String channel, int id, String notificationDetails) {
+		// Get an instance of the Notification manager
+		AppController context = AppController.instance();
+		NotificationManager mNotificationManager =
+				(NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+		// Android O requires a Notification Channel.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			CharSequence name = context.getString(R.string.app_name);
+			// Create the channel for the notification
+			NotificationChannel mChannel =
+					new NotificationChannel(channel, name, NotificationManager.IMPORTANCE_DEFAULT);
+			// Set the Notification Channel for the Notification Manager.
+			mNotificationManager.createNotificationChannel(mChannel);
+		}
+
+		// Create an explicit content Intent that starts the main Activity.
+		Intent notificationIntent = new Intent(context, MainActivity.class);
+
+		// Construct a task stack.
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+		// Add the main Activity to the task stack as the parent.
+		stackBuilder.addParentStack(MainActivity.class);
+		// Push the content Intent onto the stack.
+		stackBuilder.addNextIntent(notificationIntent);
+		// Get a PendingIntent containing the entire back stack.
+		PendingIntent notificationPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		// Get a notification builder that's compatible with platform versions >= 4
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+		// Define the notification settings.
+		builder.setSmallIcon(R.drawable.baseline_location_on_white_24)
+				.setLargeIcon(
+						BitmapFactory.decodeResource(context.getResources(), R.drawable.baseline_location_on_white_48))
+				.setColor(Color.RED)
+				.setContentTitle(notificationDetails)
+				.setContentText(context.getString(R.string.geofence_transition_notification_text))
+				.setContentIntent(notificationPendingIntent);
+
+		// Set the Channel ID for Android O.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			builder.setChannelId(channel); // Channel ID
+		}
+
+		// Dismiss notification once the user touches it.
+		builder.setAutoCancel(true);
+
+		// Issue the notification
+		mNotificationManager.notify(id, builder.build());
+	}
+
+
+	/**
+	 * Maps geofence transition types to their human-readable equivalents.
+	 *
+	 * @param transitionType A transition type constant defined in Geofence
+	 * @return A String indicating the type of transition
+	 */
+	private String getTransitionString(int transitionType) {
+		switch (transitionType) {
+			case Geofence.GEOFENCE_TRANSITION_ENTER:
+				return AppController.instance().getString(R.string.geofence_transition_entered);
+			case Geofence.GEOFENCE_TRANSITION_EXIT:
+				return AppController.instance().getString(R.string.geofence_transition_exited);
+			default:
+				return AppController.instance().getString(R.string.unknown_geofence_transition);
+		}
+	}
 }
