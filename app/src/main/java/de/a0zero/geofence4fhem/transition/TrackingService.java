@@ -11,7 +11,6 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-
 import de.a0zero.geofence4fhem.R;
 
 
@@ -24,37 +23,39 @@ import de.a0zero.geofence4fhem.R;
  */
 public class TrackingService extends Service {
 
+	public static final String CHANNEL_LOCATION_TRACKING = "LocationTracking";
 
-    public static final String CHANNEL_LOCATION_TRACKING = "LocationTracking";
+	public static final int LOCATION_TRACKING_NOTIFY_ID = 1;
 
-    public static final int LOCATION_TRACKING_NOTIFY_ID = 1;
+	private final IBinder binder = new TrackingServiceBinder();
 
-    private NotificationManager notificationManager;
+	private NotificationManager notificationManager;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
 
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.app_name);
-            NotificationChannel channel =
-                    new NotificationChannel(CHANNEL_LOCATION_TRACKING, name, NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setSmallIcon(R.drawable.baseline_location_on_white_24)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.baseline_location_on_white_48))
-                .setColor(Color.GREEN)
-                .setContentTitle("Tracking Service initializing...");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder.setChannelId(CHANNEL_LOCATION_TRACKING);
-        }
-        builder.setAutoCancel(false);
-        builder.setOngoing(true);
-        startForeground(LOCATION_TRACKING_NOTIFY_ID, builder.build());
-        startService(new Intent(this, UpdateNotificationIntentService.class));
-    }
+	@Override
+	public void onCreate() {
+		super.onCreate();
+
+		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			CharSequence name = getString(R.string.app_name);
+			NotificationChannel channel =
+					new NotificationChannel(CHANNEL_LOCATION_TRACKING, name, NotificationManager.IMPORTANCE_DEFAULT);
+			notificationManager.createNotificationChannel(channel);
+		}
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+		builder.setSmallIcon(R.drawable.baseline_location_on_white_24)
+				.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.baseline_location_on_white_48))
+				.setColor(Color.GREEN)
+				.setContentTitle("Tracking Service initializing...");
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			builder.setChannelId(CHANNEL_LOCATION_TRACKING);
+		}
+		builder.setAutoCancel(false);
+		builder.setOngoing(true);
+		startForeground(LOCATION_TRACKING_NOTIFY_ID, builder.build());
+		startService(new Intent(this, UpdateNotificationIntentService.class));
+	}
 
 
 	@Override
@@ -64,23 +65,22 @@ public class TrackingService extends Service {
 
 
 	@Override
-    public IBinder onBind(Intent intent) {
-        return binder;
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        return false;
-    }
+	public IBinder onBind(Intent intent) {
+		return binder;
+	}
 
 
-    private final IBinder binder = new TrackingServiceBinder();
+	@Override
+	public boolean onUnbind(Intent intent) {
+		return false;
+	}
 
-    public class TrackingServiceBinder extends Binder {
-        public TrackingService getService() {
-            return TrackingService.this;
-        }
-    }
 
+	public class TrackingServiceBinder extends Binder {
+
+		public TrackingService getService() {
+			return TrackingService.this;
+		}
+	}
 
 }

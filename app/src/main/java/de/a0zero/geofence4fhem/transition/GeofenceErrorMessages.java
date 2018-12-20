@@ -18,46 +18,71 @@ package de.a0zero.geofence4fhem.transition;
 
 import android.content.Context;
 import android.content.res.Resources;
-
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
-
 import de.a0zero.geofence4fhem.R;
+import de.a0zero.geofence4fhem.app.AppController;
+
 
 /**
  * Geofence error codes mapped to error messages.
  */
 public class GeofenceErrorMessages {
-    /**
-     * Prevents instantiation.
-     */
-    private GeofenceErrorMessages() {}
 
-    /**
-     * Returns the error string for a geofencing exception.
-     */
-    public static String getErrorString(Context context, Exception e) {
-        if (e instanceof ApiException) {
-            return getErrorString(context, ((ApiException) e).getStatusCode());
-        } else {
-            return context.getResources().getString(R.string.unknown_geofence_error);
-        }
-    }
+	/**
+	 * Prevents instantiation.
+	 */
+	private GeofenceErrorMessages() {
+	}
 
-    /**
-     * Returns the error string for a geofencing error code.
-     */
-    public static String getErrorString(Context context, int errorCode) {
-        Resources mResources = context.getResources();
-        switch (errorCode) {
-            case GeofenceStatusCodes.GEOFENCE_NOT_AVAILABLE:
-                return mResources.getString(R.string.geofence_not_available);
-            case GeofenceStatusCodes.GEOFENCE_TOO_MANY_GEOFENCES:
-                return mResources.getString(R.string.geofence_too_many_geofences);
-            case GeofenceStatusCodes.GEOFENCE_TOO_MANY_PENDING_INTENTS:
-                return mResources.getString(R.string.geofence_too_many_pending_intents);
-            default:
-                return mResources.getString(R.string.unknown_geofence_error);
-        }
-    }
+
+	/**
+	 * Maps geofence transition types to their human-readable equivalents.
+	 *
+	 * @param transitionType A transition type constant defined in Geofence
+	 * @return A String indicating the type of transition
+	 */
+	public static String getTransitionString(int transitionType) {
+		switch (transitionType) {
+			case Geofence.GEOFENCE_TRANSITION_ENTER:
+				return AppController.instance().getString(R.string.geofence_transition_entered);
+			case Geofence.GEOFENCE_TRANSITION_DWELL:
+				return AppController.instance().getString(R.string.geofence_transition_dwell);
+			case Geofence.GEOFENCE_TRANSITION_EXIT:
+				return AppController.instance().getString(R.string.geofence_transition_exited);
+			default:
+				return AppController.instance().getString(R.string.unknown_geofence_transition);
+		}
+	}
+
+
+	/**
+	 * Returns the error string for a geofencing exception.
+	 */
+	public static String getErrorString(Context context, Exception e) {
+		if (e instanceof ApiException) {
+			return getErrorString(context, ((ApiException) e).getStatusCode());
+		}
+		else {
+			return context.getResources().getString(R.string.unknown_geofence_error);
+		}
+	}
+
+	/**
+	 * Returns the error string for a geofencing error code.
+	 */
+	public static String getErrorString(Context context, int errorCode) {
+		Resources mResources = context.getResources();
+		switch (errorCode) {
+			case GeofenceStatusCodes.GEOFENCE_NOT_AVAILABLE:
+				return mResources.getString(R.string.geofence_not_available);
+			case GeofenceStatusCodes.GEOFENCE_TOO_MANY_GEOFENCES:
+				return mResources.getString(R.string.geofence_too_many_geofences);
+			case GeofenceStatusCodes.GEOFENCE_TOO_MANY_PENDING_INTENTS:
+				return mResources.getString(R.string.geofence_too_many_pending_intents);
+			default:
+				return mResources.getString(R.string.unknown_geofence_error);
+		}
+	}
 }

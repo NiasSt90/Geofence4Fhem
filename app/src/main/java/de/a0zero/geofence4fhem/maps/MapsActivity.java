@@ -36,7 +36,7 @@ import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 
 /**
- * Create/edit (no delete currently) Geofences on a map....<br/>
+ * create/edit/delete Geofences on a map....<br/>
  * maps-api key needed. see build file where to put it.
  * <p>
  * finally the created geofences are save to (shared-prefs) {@link de.a0zero.geofence4fhem.data.GeofenceRepo}

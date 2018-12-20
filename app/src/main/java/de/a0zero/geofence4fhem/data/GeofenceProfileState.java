@@ -4,11 +4,9 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.model.LatLng;
 import de.a0zero.geofence4fhem.actions.GeofenceAction;
-import de.a0zero.geofence4fhem.app.AppController;
 
 import java.util.Date;
 
@@ -68,7 +66,6 @@ public class GeofenceProfileState {
 	public GeofenceProfileState assignError(Throwable error) {
 		this.message = error.getMessage();
 		this.success = false;
-		Toast.makeText(AppController.instance(), error.getMessage(), Toast.LENGTH_LONG).show();
 		return this;
 	}
 

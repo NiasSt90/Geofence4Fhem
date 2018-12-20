@@ -11,16 +11,13 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.util.Log;
-import com.google.android.gms.location.Geofence;
 import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.app.AppController;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import de.a0zero.geofence4fhem.data.GeofenceProfileState;
-import de.a0zero.geofence4fhem.data.Profile;
 
 import java.util.List;
 
@@ -41,17 +38,19 @@ public class UpdateNotificationIntentService extends IntentService {
 	@Override
 	protected void onHandleIntent(@Nullable Intent intent) {
 		List<GeofenceProfileState> stateList = AppController.geofenceStateRepo().listLast(6);
-		if (stateList.isEmpty()) return;
+		if (stateList.isEmpty()) {
+			return;
+		}
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		createNotificationChannel(notificationManager);
 		NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
 		for (GeofenceProfileState state : stateList) {
-			Log.d(TAG, String.format("%d %s %tc", state.getTransition(), state.getMessage(), state.getTime()));
-			style.addLine(createLineFromState(state));
+			Log.d(TAG, String.format("FID=%s E/L/D=%d msg=%s %tc", state.getGeofenceId(), state.getTransition(), state.getMessage(), state.getTime()));
+			style.addLine(createNotificationMsgFromState(state));
 		}
 		GeofenceProfileState lastState = stateList.get(0);
-		Spanned contentText = createLineFromState(lastState);
+		Spanned contentText = createNotificationMsgFromState(lastState);
 		NotificationCompat.Builder builder =
 				new NotificationCompat.Builder(this, TrackingService.CHANNEL_LOCATION_TRACKING)
 						.setSmallIcon(R.drawable.baseline_location_on_white_24)
@@ -70,16 +69,10 @@ public class UpdateNotificationIntentService extends IntentService {
 	}
 
 
-	private Spanned createLineFromState(GeofenceProfileState state) {
+	private Spanned createNotificationMsgFromState(GeofenceProfileState state) {
 		//$TIME: ${enter/leave/dwell} $ZONE at $POSITION exec=$PROFILE_TYPE result=$SUCCESS_OR_ERROR
 		GeofenceDto geofence = AppController.geofenceRepo().findByID(state.getGeofenceId());
-		Profile profile = AppController.profileDAO().findFhemProfileById(state.getProfileId());
-		String transition = "unknown";
-		switch (state.getTransition()) {
-			case Geofence.GEOFENCE_TRANSITION_ENTER:transition = "enter";break;
-			case Geofence.GEOFENCE_TRANSITION_EXIT:transition = "leave";break;
-			case Geofence.GEOFENCE_TRANSITION_DWELL:transition = "dwell";break;
-		}
+		String transition = GeofenceErrorMessages.getTransitionString(state.getTransition());
 		String dateTime = DateUtils.formatDateTime(this, state.getTime().getTime(),
 				DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
 				| DateUtils.FORMAT_SHOW_WEEKDAY);
@@ -92,7 +85,8 @@ public class UpdateNotificationIntentService extends IntentService {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			CharSequence name = getString(R.string.app_name);
 			NotificationChannel channel =
-					new NotificationChannel(TrackingService.CHANNEL_LOCATION_TRACKING, name, NotificationManager.IMPORTANCE_DEFAULT);
+					new NotificationChannel(TrackingService.CHANNEL_LOCATION_TRACKING, name,
+							NotificationManager.IMPORTANCE_DEFAULT);
 			notificationManager.createNotificationChannel(channel);
 		}
 	}

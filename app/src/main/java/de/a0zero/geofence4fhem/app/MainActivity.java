@@ -1,7 +1,6 @@
 package de.a0zero.geofence4fhem.app;
 
 import android.Manifest;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -14,25 +13,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 import butterknife.ButterKnife;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingClient;
-import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.Task;
 import de.a0zero.geofence4fhem.BuildConfig;
 import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.actions.EditFhemNotifyActivity;
-import de.a0zero.geofence4fhem.data.GeofenceDto;
 import de.a0zero.geofence4fhem.maps.MapsActivity;
-import de.a0zero.geofence4fhem.transition.AddingGeofencesService;
-import de.a0zero.geofence4fhem.transition.GeofenceBroadcastReceiver;
-import de.a0zero.geofence4fhem.transition.GeofenceErrorMessages;
+import de.a0zero.geofence4fhem.transition.GeofencesManager;
 import de.a0zero.geofence4fhem.transition.TrackingService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -41,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
-	private GeofencingClient geofencingClient;
+	private GeofencesManager geofencesManager;
 
 
 	@Override
@@ -59,14 +46,13 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 		ButterKnife.bind(this);
 
-		geofencingClient = LocationServices.getGeofencingClient(this);
-
 		findViewById(R.id.gotoMaps)
 				.setOnClickListener(e -> startActivity(new Intent(this, MapsActivity.class)));
 		findViewById(R.id.gotoActions)
 				.setOnClickListener(e -> startActivity(new Intent(this, EditFhemNotifyActivity.class)));
 
 		startService(new Intent(this, TrackingService.class));
+		geofencesManager = new GeofencesManager(this);
 	}
 
 
@@ -75,16 +61,8 @@ public class MainActivity extends AppCompatActivity {
 			requestPermissions();
 			return;
 		}
-		//these are two different ways of inserting the geofences, old (AddingGeofencesService) and new one...
-		if (false) {
-			Intent startServiceIntent = new Intent(this, AddingGeofencesService.class);
-			startService(startServiceIntent);
-		}
-		else {
-			addGeofences();
-		}
+		addGeofences();
 	}
-
 
 	public void removeGeofencesButtonHandler(View view) {
 		if (!checkPermissions()) {
@@ -111,14 +89,8 @@ public class MainActivity extends AppCompatActivity {
 			showSnackbar(getString(R.string.insufficient_permissions));
 			return;
 		}
-		GeofencingRequest geofencingRequest = getGeofencingRequest();
-		if (!geofencingRequest.getGeofences().isEmpty()) {
-			geofencingClient.addGeofences(geofencingRequest,
-					getGeofencePendingIntent(GeofenceBroadcastReceiver.ACTION_GEOFENCE_UPDATE))
-					.addOnCompleteListener(this::onComplete);
-		}
-		else {
-			showSnackbar("No geofences created to add....");
+		if (!geofencesManager.addGeofences()) {
+			showSnackbar("No geofences created to add???");
 		}
 	}
 
@@ -129,60 +101,8 @@ public class MainActivity extends AppCompatActivity {
 			showSnackbar(getString(R.string.insufficient_permissions));
 			return;
 		}
-		geofencingClient.removeGeofences(
-				getGeofencePendingIntent(GeofenceBroadcastReceiver.ACTION_GEOFENCE_UPDATE))
-				.addOnCompleteListener(this::onComplete);
+		geofencesManager.removeGeofences();
 	}
-
-
-	public void onComplete(@NonNull Task<Void> task) {
-		if (task.isSuccessful()) {
-			//switchButtonsEnabledState();
-			Toast.makeText(this, "TaskOnComplete with Success", Toast.LENGTH_SHORT).show();
-		}
-		else {
-			// Get the status code for the error and log it using a user-friendly message.
-			String errorMessage = GeofenceErrorMessages.getErrorString(this, task.getException());
-			Log.e("ERROR", errorMessage);
-			Toast.makeText(this, "TaskOnComplete Error:" + errorMessage, Toast.LENGTH_LONG).show();
-		}
-	}
-
-
-	/**
-	 * Builds and returns a GeofencingRequest. Specifies the list of geofences to be monitored.
-	 * Also specifies how the geofence notifications are initially triggered.
-	 */
-	private GeofencingRequest getGeofencingRequest() {
-		List<Geofence> geofenceList = new ArrayList<>();
-		for (GeofenceDto geofence : AppController.geofenceRepo().listAll()) {
-			geofenceList.add(new Geofence.Builder()
-					.setRequestId(geofence.getId())
-					.setCircularRegion(geofence.getPosition().latitude, geofence.getPosition().longitude,
-							geofence.getRadius())
-					.setExpirationDuration(Geofence.NEVER_EXPIRE)
-					.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
-					.build());
-		}
-
-		GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-		// The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
-		// GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
-		// is already inside that geofence.
-		builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-		builder.addGeofences(geofenceList);
-		return builder.build();
-	}
-
-
-	private PendingIntent getGeofencePendingIntent(String action) {
-		Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
-		intent.setAction(action);
-		PendingIntent geofencePendingIntent =
-				PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		return geofencePendingIntent;
-	}
-
 
 	/**
 	 * Return the current state of the permissions needed.
