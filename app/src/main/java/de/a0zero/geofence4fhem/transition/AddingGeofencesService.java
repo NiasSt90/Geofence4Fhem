@@ -2,7 +2,7 @@ package de.a0zero.geofence4fhem.transition;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 
 /**

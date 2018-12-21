@@ -1,6 +1,6 @@
 package de.a0zero.geofence4fhem.data;
 
-import android.arch.persistence.room.TypeConverter;
+import androidx.room.TypeConverter;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;

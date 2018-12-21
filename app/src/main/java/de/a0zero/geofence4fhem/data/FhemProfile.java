@@ -1,6 +1,6 @@
 package de.a0zero.geofence4fhem.data;
 
-import android.arch.persistence.room.Entity;
+import androidx.room.Entity;
 
 
 /**
