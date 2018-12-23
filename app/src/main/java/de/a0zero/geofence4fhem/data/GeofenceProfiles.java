@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 
 
 /**
- * assign a profile {@link FhemProfile} to execute ({@link de.a0zero.geofence4fhem.actions.GeofenceAction}) on enter/leave
+ * assign a profile {@link Profile} to execute ({@link de.a0zero.geofence4fhem.actions.GeofenceAction}) on enter/leave
  * of the given {@link GeofenceDto}
  */
 @Entity(
@@ -20,12 +20,10 @@ import androidx.annotation.NonNull;
                         childColumns = "geofenceId",
                         onDelete = ForeignKey.CASCADE),
                 @ForeignKey(
-                        entity = FhemProfile.class,
+                        entity = Profile.class,
                         parentColumns = "ID",
                         childColumns = "profileId",
-                        onDelete = ForeignKey.CASCADE)},
-        indices = @Index("geofenceId")
-)
+                        onDelete = ForeignKey.CASCADE)})
 public class GeofenceProfiles {
 
     @NonNull

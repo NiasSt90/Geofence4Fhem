@@ -6,6 +6,12 @@ android {
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
 
+
+	sourceSets {
+		androidTest.assets.srcDirs +=
+				files("$projectDir/schemas".toString())
+	}
+
 	compileSdkVersion 28
 	defaultConfig {
 		applicationId "de.a0zero.geofence4fhem"
@@ -40,9 +46,10 @@ dependencies {
 	implementation 'com.google.android.material:material:1.1.0-alpha02'
 
 	implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-alpha01'
-
-	annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.1.0-alpha01'
 	implementation 'androidx.lifecycle:lifecycle-common-java8:2.1.0-alpha01'
+	implementation "androidx.lifecycle:lifecycle-reactivestreams:2.1.0-alpha01"
+	androidTestImplementation "androidx.arch.core:core-testing:2.0.0"
+
 
 	implementation 'com.google.code.gson:gson:2.8.5'
 	implementation 'com.squareup.okhttp3:okhttp:3.12.0'
@@ -64,7 +71,7 @@ dependencies {
 	// optional - RxJava support for Room
 	implementation 'androidx.room:room-rxjava2:2.1.0-alpha03'
 	// Test helpers
-	testImplementation 'androidx.room:room-testing:2.1.0-alpha03'
+	androidTestImplementation 'androidx.room:room-testing:2.1.0-alpha03'
 
 
 	testImplementation 'junit:junit:4.12'

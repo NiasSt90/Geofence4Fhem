@@ -5,20 +5,19 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import de.a0zero.geofence4fhem.data.FhemProfile;
+import de.a0zero.geofence4fhem.data.Profile;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import io.reactivex.Observable;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
+
 
 /**
  * build the following url and execute a GET request onto it:
@@ -31,7 +30,7 @@ import okhttp3.Response;
  *     &longitude=14.321822
  *     &device=$DEVICEUUID
  */
-public class GeofenceActionInformFhem implements GeofenceAction<FhemProfile> {
+public class GeofenceActionInformFhem implements GeofenceAction<Profile> {
 
     private static final String TAG = GeofenceActionInformFhem.class.getSimpleName();
     
@@ -42,12 +41,12 @@ public class GeofenceActionInformFhem implements GeofenceAction<FhemProfile> {
     }
 
     @Override
-    public Observable<ActionResponse> enter(GeofenceDto geofenceDto, FhemProfile profile, LatLng currentPosition) {
+    public Observable<ActionResponse> enter(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition) {
         return execute(geofenceDto, profile, currentPosition, true);
     }
 
     @Override
-    public Observable<ActionResponse> leave(GeofenceDto geofenceDto, FhemProfile profile, LatLng currentPosition) {
+    public Observable<ActionResponse> leave(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition) {
         return execute(geofenceDto, profile, currentPosition, false);
     }
 
@@ -58,7 +57,7 @@ public class GeofenceActionInformFhem implements GeofenceAction<FhemProfile> {
         return df.format(date);
     }
 
-    private Observable<ActionResponse> execute(GeofenceDto geofenceDto, FhemProfile profile, LatLng currentPosition, boolean enterZone) {
+    private Observable<ActionResponse> execute(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition, boolean enterZone) {
         HttpUrl.Builder builder = HttpUrl.parse(profile.getFhemUrl()).newBuilder();
         HttpUrl httpUrl = builder.addQueryParameter("id", profile.getDeviceUUID())
                 .addQueryParameter("device", profile.getDeviceUUID())

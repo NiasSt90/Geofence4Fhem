@@ -16,7 +16,7 @@ public abstract class ProfileDAO {
 
     @Transaction
     public List<Profile> listAllByType(ProfileType type) {
-        List<FhemProfile> res = listAll();
+        List<Profile> res = listAll();
         return new ArrayList<>(res);
     }
 
@@ -24,18 +24,18 @@ public abstract class ProfileDAO {
         return findFhemProfileById(id);
     }
 
-    @Query("SELECT * FROM FhemProfile WHERE id = :id")
-    public abstract FhemProfile findFhemProfileById(int id);
+    @Query("SELECT * FROM Profile WHERE id = :id")
+    public abstract Profile findFhemProfileById(int id);
 
-    @Query("SELECT * FROM FhemProfile")
-    public abstract List<FhemProfile> listAll();
+    @Query("SELECT * FROM Profile")
+    public abstract List<Profile> listAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract long add(FhemProfile profile);
+    public abstract long add(Profile profile);
 
     @Update
-    public abstract int update(FhemProfile profile);
+    public abstract int update(Profile profile);
 
     @Delete
-    public abstract void delete(FhemProfile profile);
+    public abstract void delete(Profile profile);
 }

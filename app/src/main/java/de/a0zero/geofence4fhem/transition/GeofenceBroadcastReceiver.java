@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.LatLng;
 import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.actions.GeofenceAction;
 import de.a0zero.geofence4fhem.app.AppController;
-import de.a0zero.geofence4fhem.data.FhemProfile;
+import de.a0zero.geofence4fhem.data.Profile;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import de.a0zero.geofence4fhem.data.GeofenceProfileState;
 import io.reactivex.Observable;
@@ -78,17 +78,17 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
 		Location triggeringLocation = geofencingEvent.getTriggeringLocation();
 		LatLng currentPosition = new LatLng(triggeringLocation.getLatitude(), triggeringLocation.getLongitude());
-		List<FhemProfile> profiles = AppController.geofenceActionRepo().getProfilesForGeofence(geofenceDto.getId());
+		List<Profile> profiles = AppController.geofenceActionRepo().getProfilesForGeofence(geofenceDto.getId());
 
 		//TODO: concat all observables and execute them in parallel with only one single startUpdateNotificationIntentService() call
-		for (FhemProfile profile : profiles) {
+		for (Profile profile : profiles) {
 			Class<? extends GeofenceAction> geofenceActionClass = profile.getType().getGeofenceActionClass();
 			if (geofenceActionClass == null) {
 				Log.d(TAG, "No action class for profile " + profile);
 				continue;
 			}
 			try {
-				GeofenceAction<FhemProfile> caller = geofenceActionClass.getConstructor(Context.class).newInstance(context);
+				GeofenceAction<Profile> caller = geofenceActionClass.getConstructor(Context.class).newInstance(context);
 				Observable<GeofenceAction.ActionResponse> action = null;
 				if (geofencingEvent.getGeofenceTransition() == Geofence.GEOFENCE_TRANSITION_ENTER) {
 					action = caller.enter(geofenceDto, profile, currentPosition);

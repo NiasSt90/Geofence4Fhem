@@ -21,10 +21,10 @@ public abstract class GeofenceProfilesRepo {
     @Query("SELECT * FROM GeofenceProfiles")
     public abstract List<GeofenceProfiles> listAll();
 
-    @Query("SELECT FhemProfile.* FROM FhemProfile " +
-            "INNER JOIN GeofenceProfiles ON fhemprofile.id=geofenceprofiles.profileId " +
+    @Query("SELECT Profile.* FROM Profile " +
+            "INNER JOIN GeofenceProfiles ON Profile.id=geofenceprofiles.profileId " +
             "WHERE geofenceprofiles.geofenceId=:geofenceId")
-    public abstract List<FhemProfile> getProfilesForGeofence(final String geofenceId);
+    public abstract List<Profile> getProfilesForGeofence(final String geofenceId);
 
     @Query("SELECT GeofenceDto.* FROM GeofenceDto " +
             "INNER JOIN GeofenceProfiles ON GeofenceDto.id=geofenceprofiles.geofenceId " +

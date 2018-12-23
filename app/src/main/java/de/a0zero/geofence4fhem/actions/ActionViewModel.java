@@ -11,28 +11,29 @@ import java.util.Collections;
 import java.util.List;
 
 import de.a0zero.geofence4fhem.app.AppController;
-import de.a0zero.geofence4fhem.data.FhemProfile;
+import de.a0zero.geofence4fhem.data.Profile;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import de.a0zero.geofence4fhem.data.GeofenceProfiles;
 import de.a0zero.geofence4fhem.data.GeofenceProfilesRepo;
+
 
 public class ActionViewModel extends AndroidViewModel {
 
     private static final String TAG = ActionViewModel.class.getSimpleName();
 
-    private final MutableLiveData<FhemProfile> selected = new MutableLiveData<>();
+    private final MutableLiveData<Profile> selected = new MutableLiveData<>();
 
     private final MutableLiveData<List<ProfileWithGeofences>> geofences = new MutableLiveData<>();
 
     public ActionViewModel(@NonNull Application application) {
         super(application);
-        List<FhemProfile> profiles = AppController.profileDAO().listAll();
+        List<Profile> profiles = AppController.profileDAO().listAll();
         int profileID = -1;
         if (profiles.isEmpty()) {
-            selected.setValue(new FhemProfile());
+            selected.setValue(new Profile());
         }
         else {
-            FhemProfile profile = profiles.get(0);
+            Profile profile = profiles.get(0);
             selected.setValue(profile);
             profileID = profile.getID();
         }
@@ -51,11 +52,11 @@ public class ActionViewModel extends AndroidViewModel {
         geofences.setValue(activatableProfiles);
     }
 
-    MutableLiveData<FhemProfile> getSelected() {
+    MutableLiveData<Profile> getSelected() {
         return selected;
     }
 
-    public void save(FhemProfile profile) {
+    public void save(Profile profile) {
         long profileID = profile.getID();
         if (AppController.profileDAO().update(profile) == 0) {
             profileID = AppController.profileDAO().add(profile);

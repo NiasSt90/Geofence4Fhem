@@ -25,7 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.a0zero.geofence4fhem.BuildConfig;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.data.FhemProfile;
+import de.a0zero.geofence4fhem.data.Profile;
 
 public class EditFhemNotifyActivity extends AppCompatActivity {
 
@@ -71,7 +71,7 @@ public class EditFhemNotifyActivity extends AppCompatActivity {
         model.getAllGeofenceProfiles().observe(this, geofences -> geofencesAdapter.setData(geofences));
     }
 
-    private void loadSelected(FhemProfile profile) {
+    private void loadSelected(Profile profile) {
         fhemUrl.setText(profile.getFhemUrl());
         fhemUsername.setText(profile.getUsername());
         fhemPassword.setText(profile.getPassword());
@@ -79,7 +79,7 @@ public class EditFhemNotifyActivity extends AppCompatActivity {
     }
 
     public void save(View view) {
-        FhemProfile value = model.getSelected().getValue();
+        Profile value = model.getSelected().getValue();
         if (value != null) {
             value.setFhemUrl(fhemUrl.getText().toString());
             value.setUsername(fhemUsername.getText().toString());

@@ -23,12 +23,10 @@ import java.util.Date;
 						childColumns = "geofenceId",
 						onDelete = ForeignKey.CASCADE),
 				@ForeignKey(
-						entity = FhemProfile.class,
+						entity = Profile.class,
 						parentColumns = "ID",
 						childColumns = "profileId",
-						onDelete = ForeignKey.CASCADE)},
-		indices = @Index("geofenceId")
-)
+						onDelete = ForeignKey.CASCADE)})
 public class GeofenceProfileState {
 
 	@NonNull
