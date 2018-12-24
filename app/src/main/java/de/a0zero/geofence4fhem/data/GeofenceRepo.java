@@ -9,25 +9,28 @@ import androidx.room.Update;
 
 import java.util.List;
 
+
 @Dao
 public interface GeofenceRepo {
 
+	@Query("SELECT * FROM GeofenceDto")
+	List<GeofenceDto> listAll();
 
-    @Query("SELECT * FROM GeofenceDto")
-    List<GeofenceDto> listAll();
+	@Insert(onConflict = OnConflictStrategy.REPLACE)
+	void add(GeofenceDto geofence);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void add(GeofenceDto geofence);
+	@Update(onConflict = OnConflictStrategy.REPLACE)
+	int update(GeofenceDto geofenceDto);
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    int update(GeofenceDto geofenceDto);
+	@Update(onConflict = OnConflictStrategy.REPLACE)
+	void updateAll(List<GeofenceDto> geofence);
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    void updateAll(List<GeofenceDto> geofence);
+	@Delete
+	void delete(GeofenceDto geofenceDto);
 
-    @Delete
-    void delete(GeofenceDto geofenceDto);
+	@Query("SELECT * FROM GeofenceDto WHERE id = :requestId")
+	GeofenceDto findByID(String requestId);
 
-    @Query("SELECT * FROM GeofenceDto WHERE id = :requestId")
-    GeofenceDto findByID(String requestId);
+	@Query("DELETE FROM GeofenceDto")
+	void deleteAll();
 }

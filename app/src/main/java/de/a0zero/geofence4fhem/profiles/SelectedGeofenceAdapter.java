@@ -1,26 +1,27 @@
-package de.a0zero.geofence4fhem.actions;
+package de.a0zero.geofence4fhem.profiles;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
 import android.widget.TextView;
+import androidx.recyclerview.widget.RecyclerView;
+import de.a0zero.geofence4fhem.R;
+import de.a0zero.geofence4fhem.data.SelectedGeofence;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.a0zero.geofence4fhem.R;
 
-public class GeofencesAdapter extends RecyclerView.Adapter<GeofencesAdapter.GeofencesViewHolder> {
+public class SelectedGeofenceAdapter extends RecyclerView.Adapter<SelectedGeofenceAdapter.GeofencesViewHolder> {
 
 
     private Context context;
-    private List<ProfileWithGeofences> data;
+    private List<SelectedGeofence> data;
     private LayoutInflater layoutInflater;
 
-    public GeofencesAdapter(Context context) {
+    public SelectedGeofenceAdapter(Context context) {
         this.data = new ArrayList<>();
         this.context = context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -42,7 +43,7 @@ public class GeofencesAdapter extends RecyclerView.Adapter<GeofencesAdapter.Geof
         return data.size();
     }
 
-    public void setData(List<ProfileWithGeofences> newData) {
+    public void setData(List<SelectedGeofence> newData) {
         if (data != null) {
             data.clear();
             data.addAll(newData);
@@ -64,13 +65,13 @@ public class GeofencesAdapter extends RecyclerView.Adapter<GeofencesAdapter.Geof
             toggleButton = itemView.findViewById(R.id.geofenceEnabled);
         }
 
-        void bind(ProfileWithGeofences item) {
+        void bind(SelectedGeofence item) {
             if (item != null) {
-                title.setText(item.geofenceDto.getTitle());
+                title.setText(item.geofence.getTitle());
                 toggleButton.setTag(item);
-                toggleButton.setChecked(item.active);
+                toggleButton.setChecked(item.selected);
                 toggleButton.setOnCheckedChangeListener(
-                        (button, isChecked) -> ((ProfileWithGeofences)button.getTag()).active = isChecked);
+                        (button, isChecked) -> ((SelectedGeofence)button.getTag()).selected = isChecked);
             }
         }
     }

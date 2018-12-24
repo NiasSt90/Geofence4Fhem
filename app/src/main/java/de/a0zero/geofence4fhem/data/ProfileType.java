@@ -1,15 +1,16 @@
 package de.a0zero.geofence4fhem.data;
 
-import de.a0zero.geofence4fhem.actions.EditFhemNotifyActivity;
 import de.a0zero.geofence4fhem.actions.GeofenceAction;
 import de.a0zero.geofence4fhem.actions.GeofenceActionInformFhem;
+import de.a0zero.geofence4fhem.profiles.EditFhemSettingsFragment;
+
 
 public enum ProfileType {
 
     FHEM_NOTIFY {
         @Override
         public Class<?> getEditorActionClass() {
-            return EditFhemNotifyActivity.class;
+            return EditFhemSettingsFragment.class;
         }
 
         @Override

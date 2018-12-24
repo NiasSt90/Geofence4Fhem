@@ -51,5 +51,6 @@
 	</string>
 
 	<string name="geofence_position">Geofence position</string>
+	<string name="profileName">profile name</string>
 
 </resources>

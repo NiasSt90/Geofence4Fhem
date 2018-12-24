@@ -34,7 +34,7 @@
 		</activity>
 
 		<activity android:name=".maps.MapsActivity" android:label="@string/title_activity_maps"/>
-		<activity android:name=".actions.EditFhemNotifyActivity" android:label="@string/title_activity_fhem"/>
+		<activity android:name=".profiles.ProfilesActivity"/>
 
 		<receiver
 				android:name=".transition.GeofenceBroadcastReceiver"

@@ -2,12 +2,15 @@ package de.a0zero.geofence4fhem.data;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.room.testing.MigrationTestHelper;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
+import com.google.android.gms.maps.model.LatLng;
+import de.a0zero.geofence4fhem.LiveDataTestUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,17 +19,24 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(AndroidJUnit4.class)
 public class GeofenceDatabaseTest {
 
-	private static final String TEST_DB = "migration-test";
+	private static final String TEST_DB = "migration-test1";
 
 	@Rule
 	public MigrationTestHelper helper;
+
+	@Rule
+	public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+
 
 	public GeofenceDatabaseTest() {
 		helper = new MigrationTestHelper(InstrumentationRegistry.getInstrumentation(),
@@ -34,13 +44,16 @@ public class GeofenceDatabaseTest {
 				new FrameworkSQLiteOpenHelperFactory());
 	}
 
+
 	@Before
 	public void setUp() throws Exception {
 	}
 
+
 	@After
 	public void tearDown() throws Exception {
 	}
+
 
 	@Test
 	public void migrate6_to_7() throws IOException {
@@ -77,7 +90,7 @@ public class GeofenceDatabaseTest {
 		db.close();
 
 		GeofenceDatabase newDB = getMigratedRoomDatabase();
-		Profile profile = newDB.profileDAO().findFhemProfileById(1);
+		Profile profile = newDB.profileDAO().findById(1);
 		assertEquals(profile.label, "myLabel");
 		assertEquals(profile.type, ProfileType.FHEM_NOTIFY);
 		assertEquals(profile.getFhemUrl(), "https://example.org/fhem/geo");
@@ -90,15 +103,66 @@ public class GeofenceDatabaseTest {
 		assertEquals(1, newDB.geofenceProfileStateRepo().listLast(10).size());
 	}
 
+
+	@Test
+	public void selectedGeofences() throws IOException, InterruptedException {
+		helper.createDatabase(TEST_DB, 7).close();//create fresh db
+		GeofenceDatabase newDB = getMigratedRoomDatabase();
+
+		GeofenceDto geofenceDto1 = new GeofenceDto(new LatLng(0,0));
+		newDB.geofenceRepo().add(geofenceDto1);
+		GeofenceDto geofenceDto2 = new GeofenceDto(new LatLng(1,0));
+		newDB.geofenceRepo().add(geofenceDto2);
+
+		long profile1ID = newDB.profileDAO().add(new Profile());
+		newDB.geofenceProfilesRepo().add(new GeofenceProfiles((int) profile1ID, geofenceDto1.getId()));
+
+		long profile2ID = newDB.profileDAO().add(new Profile());
+
+		long profile3ID = newDB.profileDAO().add(new Profile());
+		newDB.geofenceProfilesRepo().add(new GeofenceProfiles((int) profile3ID, geofenceDto1.getId()));
+		newDB.geofenceProfilesRepo().add(new GeofenceProfiles((int) profile3ID, geofenceDto2.getId()));
+
+		List<GeofenceDto> geofenceDtoList = newDB.geofenceRepo().listAll();
+		assertEquals(2, geofenceDtoList.size());
+
+		//Profile 1 has one geofence assigned
+		List<SelectedGeofence> selectedGeofences = LiveDataTestUtil.getValue(newDB.profileDAO().selectedGeofences((int) profile1ID));
+		assertEquals(geofenceDtoList.size(), selectedGeofences.size());
+		assertTrue(selectedGeofences.get(0).selected);
+		assertEquals(selectedGeofences.get(0).geofence.getId(), geofenceDto1.getId());
+		assertFalse(selectedGeofences.get(1).selected);
+		assertEquals(selectedGeofences.get(1).geofence.getId(), geofenceDto2.getId());
+
+		//Profile 2 has no geofence assigned
+		selectedGeofences = LiveDataTestUtil.getValue(newDB.profileDAO().selectedGeofences((int) profile2ID));
+		assertEquals(geofenceDtoList.size(), selectedGeofences.size());
+		assertEquals(selectedGeofences.get(0).geofence.getId(), geofenceDto1.getId());
+		assertFalse(selectedGeofences.get(0).selected);
+		assertEquals(selectedGeofences.get(1).geofence.getId(), geofenceDto2.getId());
+		assertFalse(selectedGeofences.get(1).selected);
+
+		//Profile 3 has both geofences assigned
+		selectedGeofences = LiveDataTestUtil.getValue(newDB.profileDAO().selectedGeofences((int) profile3ID));
+		assertEquals(selectedGeofences.get(0).geofence.getId(), geofenceDto1.getId());
+		assertTrue(selectedGeofences.get(0).selected);
+		assertEquals(selectedGeofences.get(1).geofence.getId(), geofenceDto2.getId());
+		assertTrue(selectedGeofences.get(1).selected);
+
+	}
+
+
 	private GeofenceDatabase getMigratedRoomDatabase() {
 		GeofenceDatabase database = Room.databaseBuilder(
 				InstrumentationRegistry.getInstrumentation().getTargetContext(),
 				GeofenceDatabase.class, TEST_DB)
+				.allowMainThreadQueries()
 				.addMigrations(
 						GeofenceDatabase.MIGRATION_2_3,
 						GeofenceDatabase.MIGRATION_3_4,
 						GeofenceDatabase.MIGRATION_4_6,
-						GeofenceDatabase.MIGRATION_6_7)
+						GeofenceDatabase.MIGRATION_6_7
+				)
 				.build();
 		helper.closeWhenFinished(database);
 		return database;

@@ -1,7 +1,6 @@
 package de.a0zero.geofence4fhem.data;
 
 import android.content.Context;
-import android.database.Cursor;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -9,12 +8,11 @@ import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import java.util.ArrayList;
-import java.util.List;
 
-
-@Database(entities = {Profile.class, GeofenceDto.class, GeofenceProfiles.class,
-							 GeofenceProfileState.class}, version = 7)
+@Database(
+		entities = {Profile.class, GeofenceDto.class, GeofenceProfiles.class,
+							 GeofenceProfileState.class},
+		version = 7)
 @TypeConverters(TypeConvertes.class)
 public abstract class GeofenceDatabase extends RoomDatabase {
 

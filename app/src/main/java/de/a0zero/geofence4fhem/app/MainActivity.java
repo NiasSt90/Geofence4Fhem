@@ -6,18 +6,18 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import butterknife.ButterKnife;
+import com.google.android.material.snackbar.Snackbar;
 import de.a0zero.geofence4fhem.BuildConfig;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.actions.EditFhemNotifyActivity;
 import de.a0zero.geofence4fhem.maps.MapsActivity;
+import de.a0zero.geofence4fhem.profiles.ProfilesActivity;
 import de.a0zero.geofence4fhem.transition.GeofencesManager;
 import de.a0zero.geofence4fhem.transition.TrackingService;
 
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 		findViewById(R.id.gotoMaps)
 				.setOnClickListener(e -> startActivity(new Intent(this, MapsActivity.class)));
 		findViewById(R.id.gotoActions)
-				.setOnClickListener(e -> startActivity(new Intent(this, EditFhemNotifyActivity.class)));
+				.setOnClickListener(e -> startActivity(new Intent(this, ProfilesActivity.class)));
 
 		startService(new Intent(this, TrackingService.class));
 		geofencesManager = new GeofencesManager(this);
