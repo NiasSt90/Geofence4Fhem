@@ -4,14 +4,13 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 import com.google.gson.JsonObject;
+import de.a0zero.geofence4fhem.profiles.GeofenceAction;
+
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
- * a profile with some settings, needed for executing on enter/leave of an {@link de.a0zero.geofence4fhem.actions.GeofenceAction} implementation.
- *
- * TODO: because no JOIN-TABLE inheritance not possible in sqlite we need to merge together FhemProfile and Profile into a single class.
- * Profile then can be used for other stuff (change RingTone-Settings, toggle-WLAN/..) and therefore the attributes here must
- * be stored into a json structure blob...
+ * a profile with some settings, needed for executing on enter/leave of an {@link GeofenceAction} implementation.
  */
 @Entity
 public class Profile {
@@ -25,10 +24,12 @@ public class Profile {
 
 	JsonObject data;
 
-	public Profile() {
-		this.type = ProfileType.FHEM_NOTIFY;
+
+	public Profile(ProfileType type) {
+		this.type = type;
 		data = new JsonObject();
 	}
+
 
 	public int getID() {
 		return ID;
@@ -61,10 +62,12 @@ public class Profile {
 		return type;
 	}
 
+
 	@TypeConverters(TypeConvertes.class)
 	public JsonObject getData() {
 		return data;
 	}
+
 
 	@TypeConverters(TypeConvertes.class)
 	public void setData(JsonObject data) {
@@ -72,43 +75,13 @@ public class Profile {
 	}
 
 
-	public String getFhemUrl() {
-		return data.get("fhemUrl").getAsString();
-	}
-
-
-	public void setFhemUrl(String fhemUrl) {
-		this.data.addProperty("fhemUrl", fhemUrl);
-	}
-
-
-	public String getUsername() {
-		return data.get("username").getAsString();
-	}
-
-
-	public void setUsername(String username) {
-		data.addProperty("username", username);
-	}
-
-
-	public String getPassword() {
-		return data.get("password").getAsString();
-	}
-
-
-	public void setPassword(String password) {
-		this.data.addProperty("password", password);
-	}
-
-
-	public String getDeviceUUID() {
-		return data.get("deviceUUID").getAsString();
-	}
-
-
-	public void setDeviceUUID(String deviceUUID) {
-		this.data.addProperty("deviceUUID", deviceUUID);
+	public <T extends ProfileDataMapper> T data(Class<T> tClass) {
+		try {
+			return tClass.getConstructor(JsonObject.class).newInstance(data);
+		}
+		catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+			throw new IllegalArgumentException(e);
+		}
 	}
 
 }

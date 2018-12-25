@@ -1,15 +1,19 @@
 package de.a0zero.geofence4fhem.profiles;
 
 import android.os.Bundle;
+import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.data.Profile;
+import de.a0zero.geofence4fhem.data.ProfileType;
 
 
 public class ProfilesActivity extends AppCompatActivity implements ProfileOnClickListener {
@@ -37,6 +41,25 @@ public class ProfilesActivity extends AppCompatActivity implements ProfileOnClic
 
 		model = ViewModelProviders.of(this).get(ProfilesViewModel.class);
 		model.getAllProfiles().observe(this, profiles -> profilesAdapter.setData(profiles));
+	}
+
+
+	@OnClick(R.id.fab_add)
+	public void onCreateProfile(View view) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Choose Profile type");
+		CharSequence[] profileLabels = new CharSequence[ProfileType.values().length];
+		for (int i = 0; i < ProfileType.values().length; i++) {
+			profileLabels[i] = getString(ProfileType.values()[i].getLabelRes());
+		}
+		builder.setItems(profileLabels, (dialog, which) -> createProfile(ProfileType.values()[which]))
+				.show();
+	}
+
+
+	private void createProfile(ProfileType type) {
+		model.setSelectedProfile(new Profile(type));
+		new ProfileEditorFragment().show(getSupportFragmentManager(), "EDITOR");
 	}
 
 

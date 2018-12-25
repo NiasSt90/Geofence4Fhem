@@ -79,7 +79,7 @@ public class ProfileEditorFragment extends DialogFragment {
 		profileName.setText(profile.getLabel());
 		getChildFragmentManager()
 				.beginTransaction()
-				.add(R.id.profileData, new EditFhemSettingsFragment())
+				.add(R.id.profileData, profile.getType().getEditorFragment())
 				.commit();
 	}
 
@@ -94,6 +94,12 @@ public class ProfileEditorFragment extends DialogFragment {
 		}
 		profile.setLabel(profileName.getText().toString());
 		model.save(profile);
+		dismiss();
+	}
+
+	@OnClick(R.id.delete)
+	public void deleteProfile(View view) {
+		model.deleteSelected();
 		dismiss();
 	}
 }

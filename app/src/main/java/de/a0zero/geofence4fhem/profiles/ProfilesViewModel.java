@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import de.a0zero.geofence4fhem.app.AppController;
+import de.a0zero.geofence4fhem.app.App;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import de.a0zero.geofence4fhem.data.GeofenceProfiles;
 import de.a0zero.geofence4fhem.data.GeofenceProfilesRepo;
@@ -31,8 +31,8 @@ public class ProfilesViewModel extends AndroidViewModel {
 
 	public ProfilesViewModel(@NonNull Application application) {
 		super(application);
-		profileDAO = AppController.profileDAO();
-		geofenceProfilesRepo = AppController.geofenceActionRepo();
+		profileDAO = App.profileDAO();
+		geofenceProfilesRepo = App.geofenceActionRepo();
 		this.profiles = profileDAO.liveList();
 	}
 
@@ -73,5 +73,10 @@ public class ProfilesViewModel extends AndroidViewModel {
 				geofenceProfilesRepo.del(geofenceProfiles);
 			}
 		}
+	}
+
+
+	public void deleteSelected() {
+		profileDAO.delete(selected.getValue());
 	}
 }

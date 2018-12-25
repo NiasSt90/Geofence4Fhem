@@ -3,14 +3,14 @@ package de.a0zero.geofence4fhem.transition;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Task;
-import de.a0zero.geofence4fhem.app.AppController;
+import de.a0zero.geofence4fhem.app.App;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class GeofencesManager {
 
 
 	private List<Geofence> buildGeofencesList() {
-		List<GeofenceDto> geofenceDtos = AppController.geofenceRepo().listAll();
+		List<GeofenceDto> geofenceDtos = App.geofenceRepo().listAll();
 		List<Geofence> result = new ArrayList<>();
 		for (GeofenceDto geo : geofenceDtos) {
 			result.add(new Geofence.Builder()

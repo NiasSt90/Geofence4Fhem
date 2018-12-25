@@ -1,12 +1,11 @@
 package de.a0zero.geofence4fhem.data;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Index;
-import androidx.annotation.NonNull;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.model.LatLng;
-import de.a0zero.geofence4fhem.actions.GeofenceAction;
+import de.a0zero.geofence4fhem.profiles.GeofenceAction;
 
 import java.util.Date;
 
@@ -118,7 +117,7 @@ public class GeofenceProfileState {
 
 	/**
 	 * Enter or Leave or dwell ....
-	 * see {@link Geofence.GEOFENCE_TRANSITION_ENTER}
+	 * see {@link Geofence#GEOFENCE_TRANSITION_ENTER}
 	 */
 	public void setTransition(int transition) {
 		this.transition = transition;

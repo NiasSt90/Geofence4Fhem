@@ -1,14 +1,13 @@
 package de.a0zero.geofence4fhem.data;
 
-
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
-import androidx.room.Index;
-import androidx.annotation.NonNull;
+import de.a0zero.geofence4fhem.profiles.GeofenceAction;
 
 
 /**
- * assign a profile {@link Profile} to execute ({@link de.a0zero.geofence4fhem.actions.GeofenceAction}) on enter/leave
+ * assign a profile {@link Profile} to execute ({@link GeofenceAction}) on enter/leave
  * of the given {@link GeofenceDto}
  */
 @Entity(

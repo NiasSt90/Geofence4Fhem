@@ -53,4 +53,12 @@
 	<string name="geofence_position">Geofence position</string>
 	<string name="profileName">profile name</string>
 
+	<string name="ringer_enter_text">Enter Zone</string>
+	<string name="ringer_leave_text">Leave Zone</string>
+	<string name="ringer_silent">Silent</string>
+	<string name="ringer_vibrate">Vibrate</string>
+	<string name="ringer_normal">Normal</string>
+
+	<string name="profile_type_fhem">FHEM-Geofancy Call</string>
+	<string name="profile_type_ringer">Ringer settings</string>
 </resources>

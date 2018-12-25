@@ -1,4 +1,4 @@
-package de.a0zero.geofence4fhem.profiles;
+package de.a0zero.geofence4fhem.profiles.fhem;
 
 import android.Manifest;
 import android.content.Context;
@@ -24,6 +24,8 @@ import com.google.android.material.snackbar.Snackbar;
 import de.a0zero.geofence4fhem.BuildConfig;
 import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.data.Profile;
+import de.a0zero.geofence4fhem.profiles.ProfilesViewModel;
+import de.a0zero.geofence4fhem.profiles.SettingsDataFragment;
 
 
 public class EditFhemSettingsFragment extends Fragment implements SettingsDataFragment {
@@ -63,19 +65,21 @@ public class EditFhemSettingsFragment extends Fragment implements SettingsDataFr
 
 
 	private void loadSelected(Profile profile) {
-		fhemUrl.setText(profile.getFhemUrl());
-		fhemUsername.setText(profile.getUsername());
-		fhemPassword.setText(profile.getPassword());
-		fhemDeviceID.setText(profile.getDeviceUUID());
+		FhemSettings fhemSettings = profile.data(FhemSettings.class);
+		fhemUrl.setText(fhemSettings.getFhemUrl());
+		fhemUsername.setText(fhemSettings.getUsername());
+		fhemPassword.setText(fhemSettings.getPassword());
+		fhemDeviceID.setText(fhemSettings.getDeviceUUID());
 	}
 
 
 	@Override
 	public void writeBack(Profile profile) {
-		profile.setFhemUrl(fhemUrl.getText().toString());
-		profile.setUsername(fhemUsername.getText().toString());
-		profile.setPassword(fhemPassword.getText().toString());
-		profile.setDeviceUUID(fhemDeviceID.getText().toString());
+		FhemSettings fhemSettings = profile.data(FhemSettings.class);
+		fhemSettings.setFhemUrl(fhemUrl.getText().toString());
+		fhemSettings.setUsername(fhemUsername.getText().toString());
+		fhemSettings.setPassword(fhemPassword.getText().toString());
+		fhemSettings.setDeviceUUID(fhemDeviceID.getText().toString());
 	}
 
 

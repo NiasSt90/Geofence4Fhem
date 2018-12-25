@@ -22,7 +22,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.app.AppController;
+import de.a0zero.geofence4fhem.app.App;
 
 
 /**
@@ -46,13 +46,13 @@ public class GeofenceErrorMessages {
 	public static String getTransitionString(int transitionType) {
 		switch (transitionType) {
 			case Geofence.GEOFENCE_TRANSITION_ENTER:
-				return AppController.instance().getString(R.string.geofence_transition_entered);
+				return App.instance().getString(R.string.geofence_transition_entered);
 			case Geofence.GEOFENCE_TRANSITION_DWELL:
-				return AppController.instance().getString(R.string.geofence_transition_dwell);
+				return App.instance().getString(R.string.geofence_transition_dwell);
 			case Geofence.GEOFENCE_TRANSITION_EXIT:
-				return AppController.instance().getString(R.string.geofence_transition_exited);
+				return App.instance().getString(R.string.geofence_transition_exited);
 			default:
-				return AppController.instance().getString(R.string.unknown_geofence_transition);
+				return App.instance().getString(R.string.unknown_geofence_transition);
 		}
 	}
 

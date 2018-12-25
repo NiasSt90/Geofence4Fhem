@@ -10,11 +10,11 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 import com.google.android.gms.maps.model.LatLng;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.actions.GeofenceAction;
-import de.a0zero.geofence4fhem.app.AppController;
-import de.a0zero.geofence4fhem.data.Profile;
+import de.a0zero.geofence4fhem.app.App;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import de.a0zero.geofence4fhem.data.GeofenceProfileState;
+import de.a0zero.geofence4fhem.data.Profile;
+import de.a0zero.geofence4fhem.profiles.GeofenceAction;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -50,7 +50,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 	protected void onHandleGeofenceIntent(Context context, Intent intent) {
 		GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
 		if (geofencingEvent.hasError()) {
-			String errorMessage = GeofenceErrorMessages.getErrorString(AppController.instance(),
+			String errorMessage = GeofenceErrorMessages.getErrorString(App.instance(),
 					geofencingEvent.getErrorCode());
 			Log.e(TAG, errorMessage);
 			Toast.makeText(context, "onHandleGeofenceIntent Error:" + errorMessage, Toast.LENGTH_LONG).show();
@@ -62,14 +62,14 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 			 geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
 			List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 			for (Geofence geofence : triggeringGeofences) {
-				GeofenceDto fence = AppController.geofenceRepo().findByID(geofence.getRequestId());
+				GeofenceDto fence = App.geofenceRepo().findByID(geofence.getRequestId());
 				if (fence != null) {
 					executeProfiles(context, geofencingEvent, fence);
 				}
 			}
 		}
 		else {
-			Log.e(TAG, AppController.instance().getString(R.string.geofence_transition_invalid_type, geofenceTransition));
+			Log.e(TAG, App.instance().getString(R.string.geofence_transition_invalid_type, geofenceTransition));
 		}
 	}
 
@@ -78,7 +78,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
 		Location triggeringLocation = geofencingEvent.getTriggeringLocation();
 		LatLng currentPosition = new LatLng(triggeringLocation.getLatitude(), triggeringLocation.getLongitude());
-		List<Profile> profiles = AppController.geofenceActionRepo().getProfilesForGeofence(geofenceDto.getId());
+		List<Profile> profiles = App.geofenceActionRepo().getProfilesForGeofence(geofenceDto.getId());
 
 		//TODO: concat all observables and execute them in parallel with only one single startUpdateNotificationIntentService() call
 		for (Profile profile : profiles) {
@@ -103,10 +103,10 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 					action.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 							.doOnTerminate(GeofenceBroadcastReceiver::startUpdateNotificationIntentService)
 							.subscribe(
-									response -> AppController.geofenceStateRepo().add(state.assignResponse(response)),
+									response -> App.geofenceStateRepo().add(state.assignResponse(response)),
 									error -> {
-										AppController.geofenceStateRepo().add(state.assignError(error));
-										Toast.makeText(AppController.instance(), error.getMessage(), Toast.LENGTH_LONG).show();
+										App.geofenceStateRepo().add(state.assignError(error));
+										Toast.makeText(App.instance(), error.getMessage(), Toast.LENGTH_LONG).show();
 									});
 				}
 			}
@@ -119,6 +119,6 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 	}
 
 	private static void startUpdateNotificationIntentService() {
-		AppController.instance().startService(new Intent(AppController.instance(), UpdateNotificationIntentService.class));
+		App.instance().startService(new Intent(App.instance(), UpdateNotificationIntentService.class));
 	}
 }

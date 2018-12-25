@@ -1,7 +1,6 @@
-package de.a0zero.geofence4fhem.actions;
+package de.a0zero.geofence4fhem.profiles;
 
 import com.google.android.gms.maps.model.LatLng;
-
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import io.reactivex.Observable;
 

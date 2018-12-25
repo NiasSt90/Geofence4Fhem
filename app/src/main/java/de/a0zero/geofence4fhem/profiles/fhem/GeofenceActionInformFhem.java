@@ -1,22 +1,21 @@
-package de.a0zero.geofence4fhem.actions;
+package de.a0zero.geofence4fhem.profiles.fhem;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.google.android.gms.maps.model.LatLng;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-
-import de.a0zero.geofence4fhem.data.Profile;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
+import de.a0zero.geofence4fhem.data.Profile;
+import de.a0zero.geofence4fhem.profiles.GeofenceAction;
 import io.reactivex.Observable;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 
 /**
@@ -58,16 +57,18 @@ public class GeofenceActionInformFhem implements GeofenceAction<Profile> {
     }
 
     private Observable<ActionResponse> execute(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition, boolean enterZone) {
-        HttpUrl.Builder builder = HttpUrl.parse(profile.getFhemUrl()).newBuilder();
-        HttpUrl httpUrl = builder.addQueryParameter("id", profile.getDeviceUUID())
-                .addQueryParameter("device", profile.getDeviceUUID())
+		 FhemSettings fhemSettings = profile.data(FhemSettings.class);
+		 HttpUrl.Builder builder = HttpUrl.parse(fhemSettings.getFhemUrl()).newBuilder();
+        HttpUrl httpUrl = builder.addQueryParameter("id", fhemSettings.getDeviceUUID())
+                .addQueryParameter("device", fhemSettings.getDeviceUUID())
                 .addQueryParameter("entry", enterZone ? "1":"0")
                 .addQueryParameter("name", geofenceDto.getName())
                 .addQueryParameter("date", toISO8601UTC(new Date()))
                 .addQueryParameter("latitude", Double.toString(currentPosition.latitude))
                 .addQueryParameter("longitude", Double.toString(currentPosition.longitude))
                 .build();
-        String credentials = Credentials.basic(profile.getUsername(), profile.getPassword());
+        String credentials = Credentials.basic(
+				  fhemSettings.getUsername(), fhemSettings.getPassword());
         Request httpRequest = new Request.Builder()
                 .url(httpUrl.url())
                 .header("content-type", "application/json")

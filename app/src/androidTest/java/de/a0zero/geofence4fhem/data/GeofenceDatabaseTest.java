@@ -11,6 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 import com.google.android.gms.maps.model.LatLng;
 import de.a0zero.geofence4fhem.LiveDataTestUtil;
+import de.a0zero.geofence4fhem.profiles.fhem.FhemSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -93,10 +94,10 @@ public class GeofenceDatabaseTest {
 		Profile profile = newDB.profileDAO().findById(1);
 		assertEquals(profile.label, "myLabel");
 		assertEquals(profile.type, ProfileType.FHEM_NOTIFY);
-		assertEquals(profile.getFhemUrl(), "https://example.org/fhem/geo");
-		assertEquals(profile.getUsername(), "myLogin");
-		assertEquals(profile.getPassword(), "myPassword");
-		assertEquals(profile.getDeviceUUID(), "device12345");
+		assertEquals(profile.data(FhemSettings.class).getFhemUrl(), "https://example.org/fhem/geo");
+		assertEquals(profile.data(FhemSettings.class).getUsername(), "myLogin");
+		assertEquals(profile.data(FhemSettings.class).getPassword(), "myPassword");
+		assertEquals(profile.data(FhemSettings.class).getDeviceUUID(), "device12345");
 
 		//check associations
 		assertEquals(1, newDB.geofenceProfilesRepo().getProfilesForGeofence("myID").size());
@@ -114,12 +115,12 @@ public class GeofenceDatabaseTest {
 		GeofenceDto geofenceDto2 = new GeofenceDto(new LatLng(1,0));
 		newDB.geofenceRepo().add(geofenceDto2);
 
-		long profile1ID = newDB.profileDAO().add(new Profile());
+		long profile1ID = newDB.profileDAO().add(new Profile(ProfileType.FHEM_NOTIFY));
 		newDB.geofenceProfilesRepo().add(new GeofenceProfiles((int) profile1ID, geofenceDto1.getId()));
 
-		long profile2ID = newDB.profileDAO().add(new Profile());
+		long profile2ID = newDB.profileDAO().add(new Profile(ProfileType.FHEM_NOTIFY));
 
-		long profile3ID = newDB.profileDAO().add(new Profile());
+		long profile3ID = newDB.profileDAO().add(new Profile(ProfileType.FHEM_NOTIFY));
 		newDB.geofenceProfilesRepo().add(new GeofenceProfiles((int) profile3ID, geofenceDto1.getId()));
 		newDB.geofenceProfilesRepo().add(new GeofenceProfiles((int) profile3ID, geofenceDto2.getId()));
 

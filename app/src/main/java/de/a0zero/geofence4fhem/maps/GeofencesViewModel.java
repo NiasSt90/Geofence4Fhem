@@ -1,15 +1,14 @@
 package de.a0zero.geofence4fhem.maps;
 
 import android.app.Application;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.annotation.NonNull;
-
-import java.util.List;
-
-import de.a0zero.geofence4fhem.app.AppController;
+import de.a0zero.geofence4fhem.app.App;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import de.a0zero.geofence4fhem.data.GeofenceRepo;
+
+import java.util.List;
 
 
 class GeofencesViewModel extends AndroidViewModel {
@@ -24,7 +23,7 @@ class GeofencesViewModel extends AndroidViewModel {
 
     public GeofencesViewModel(@NonNull Application application) {
         super(application);
-        geofenceRepo = AppController.geofenceRepo();
+        geofenceRepo = App.geofenceRepo();
         geofences.setValue(geofenceRepo.listAll());
     }
 

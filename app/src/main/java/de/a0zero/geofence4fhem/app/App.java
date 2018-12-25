@@ -2,20 +2,19 @@ package de.a0zero.geofence4fhem.app;
 
 import android.app.Application;
 import android.util.Log;
-
+import de.a0zero.geofence4fhem.data.GeofenceDatabase;
 import de.a0zero.geofence4fhem.data.GeofenceProfileStateRepo;
 import de.a0zero.geofence4fhem.data.GeofenceProfilesRepo;
-import de.a0zero.geofence4fhem.data.GeofenceDatabase;
 import de.a0zero.geofence4fhem.data.GeofenceRepo;
 import de.a0zero.geofence4fhem.data.ProfileDAO;
 
 import static android.content.ContentValues.TAG;
 
-public class AppController extends Application {
+public class App extends Application {
 
-    private static AppController mInstance;
+    private static App mInstance;
 
-    public static AppController instance() {
+    public static App instance() {
         return mInstance;
     }
 

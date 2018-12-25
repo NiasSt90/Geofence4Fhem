@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -67,11 +68,13 @@ public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.Profil
 
 	class ProfilesViewHolder extends RecyclerView.ViewHolder {
 
+		private ImageView imageView;
 		private TextView title;
 
 
 		ProfilesViewHolder(View itemView) {
 			super(itemView);
+			imageView = itemView.findViewById(R.id.profileTypeImage);
 			title = itemView.findViewById(R.id.profileName);
 		}
 
@@ -79,8 +82,9 @@ public class ProfilesAdapter extends RecyclerView.Adapter<ProfilesAdapter.Profil
 		void bind(Profile item) {
 			if (item != null) {
 				title.setTag(item);
+				title.setText(item.getLabel());
 				title.setOnClickListener(l -> onClickListener.onProfileClick((Profile) l.getTag()));
-				title.setText(item.getType().name() + ":" + item.getLabel());
+				imageView.setImageResource(item.getType().getImageRes());
 			}
 		}
 	}

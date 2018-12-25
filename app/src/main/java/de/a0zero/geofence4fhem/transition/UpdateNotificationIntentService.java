@@ -8,14 +8,14 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.util.Log;
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.app.AppController;
+import de.a0zero.geofence4fhem.app.App;
 import de.a0zero.geofence4fhem.data.GeofenceDto;
 import de.a0zero.geofence4fhem.data.GeofenceProfileState;
 
@@ -37,7 +37,7 @@ public class UpdateNotificationIntentService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(@Nullable Intent intent) {
-		List<GeofenceProfileState> stateList = AppController.geofenceStateRepo().listLast(6);
+		List<GeofenceProfileState> stateList = App.geofenceStateRepo().listLast(6);
 		if (stateList.isEmpty()) {
 			return;
 		}
@@ -65,13 +65,13 @@ public class UpdateNotificationIntentService extends IntentService {
 			builder.setChannelId(TrackingService.CHANNEL_LOCATION_TRACKING);
 		}
 		notificationManager.notify(TrackingService.LOCATION_TRACKING_NOTIFY_ID, builder.build());
-		AppController.geofenceStateRepo().deleteOldEntries();
+		App.geofenceStateRepo().deleteOldEntries();
 	}
 
 
 	private Spanned createNotificationMsgFromState(GeofenceProfileState state) {
 		//$TIME: ${enter/leave/dwell} $ZONE at $POSITION exec=$PROFILE_TYPE result=$SUCCESS_OR_ERROR
-		GeofenceDto geofence = AppController.geofenceRepo().findByID(state.getGeofenceId());
+		GeofenceDto geofence = App.geofenceRepo().findByID(state.getGeofenceId());
 		String transition = GeofenceErrorMessages.getTransitionString(state.getTransition());
 		String dateTime = DateUtils.formatDateTime(this, state.getTime().getTime(),
 				DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE

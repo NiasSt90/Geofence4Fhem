@@ -1,35 +1,18 @@
-# GeofenceApp test project 
+# simple GeofenceApp for FHEM 
 
-**This is only a proof of example to show the problems with geofencing for an app on devices >= android 8.0.**
+This app was started as a proof of concept to show/handle the problems with background reception of geofence events after the upgrade to android oreo (8.0).
 
-You get only the geofence events, if someone, i.e. another app like google maps or in this sample 
-my continues location request (see de.a0zero.geofence4fhem.app.MainActivity.addLocationUpdateRequests)
-requests active an location.<br/> 
-Without this you will never get an geofence ENTER/LEAVE intent.<br/>
-<p/>
-you can try this by yourself like:<br/>
-Start the app and add some geofences on the map (sorry you need a map-api key).<br/> 
-Hint: for editing a geofence, do a long-click on the info window of the marker.<br/>
-<p/>
-Now add the geofences (add geofences button).<br/>
-As long as you are this apps map view or google-maps-app you can
-trigger the geofence event with the correct fake location events from emulator.<br/>
-But if you put this app in the background (independent from start of the foreground TrackingService)
-you will get no events anymore.<br/>
-<br/>
-But if you request continuous the location tracking (button from MainActivity) **and** started the 
-foreground service (both are needed) <br/>
-it works, even if the main activity goes to background.<br/>
-<br/>
-The (simple) ForegroundService with a notification allows the app to receive the intent (in GeofenceBroadcastReceiver)
-<p/>
-<p/>
-Remark:<br/>
-most of the location code is based on a discussion on stack overflow and some examples from google.<br/>
-i've used two different ways of adding the geofences based on the [discussion on stack overflow.]
-(https://stackoverflow.com/questions/45422591/geofence-notification-not-triggered-when-app-in-background)
-<p/>
-See the if (false) in de.a0zero.geofence4fhem.app.MainActivity.addGeofencesButtonHandler
-there is **no difference** in both regarding the receiving of the events. both are working or not, only 
-depends on the foreground-Service and continues location requests.
+## Current state of the project
 
+You can create/edit/delete some geofences on a google map. 
+Then you create some profiles and assign each of them to some of the created fences. These profiles are executed on enter/leave events of the geofence.
+
+Currently there are only two type of profiles:
+* [FHEM Geofancy](https://wiki.fhem.de/wiki/GEOFANCY) with Basic Http-Auth
+* Ringer settings (silent/vibrate/normal)
+
+Some others will coming soon, like individual http calls (POST/PUT/...), change wlan/bluetooth settings or execute tasker actions.
+The ongoing notification (Foreground Service) will show you the last six results of the profile executions.
+
+Currently the register/re-register of the geofences (after create/update, location-provider changes, ...) must be made manually from the main menue of the app.
+Later this will happen automatically for you.
