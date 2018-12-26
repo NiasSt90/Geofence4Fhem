@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Binder;
 import android.os.Build;
@@ -44,9 +43,8 @@ public class TrackingService extends Service {
 			notificationManager.createNotificationChannel(channel);
 		}
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-		builder.setSmallIcon(R.drawable.baseline_location_on_white_24)
-				.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.baseline_location_on_white_48))
-				.setColor(Color.GREEN)
+		builder.setSmallIcon(R.drawable.ic_person_pin_circle_black_24dp)
+				.setColor(Color.YELLOW)
 				.setContentTitle("Tracking Service initializing...");
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			builder.setChannelId(CHANNEL_LOCATION_TRACKING);

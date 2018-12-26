@@ -5,7 +5,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.text.Html;
@@ -15,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import de.a0zero.geofence4fhem.R;
+import de.a0zero.geofence4fhem.ResUtils;
 import de.a0zero.geofence4fhem.app.App;
 import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
 import de.a0zero.geofence4fhem.data.entities.GeofenceProfileState;
@@ -53,10 +53,10 @@ public class UpdateNotificationIntentService extends IntentService {
 		Spanned contentText = createNotificationMsgFromState(lastState);
 		NotificationCompat.Builder builder =
 				new NotificationCompat.Builder(this, TrackingService.CHANNEL_LOCATION_TRACKING)
-						.setSmallIcon(R.drawable.baseline_location_on_white_24)
+						.setSmallIcon(R.drawable.ic_person_pin_circle_black_24dp)
 						.setContentTitle("Last geofence events...")
 						.setContentText(contentText)
-						.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.baseline_location_on_white_48))
+						.setLargeIcon(ResUtils.getBitmap(this, R.drawable.ic_person_pin_circle_black_24dp))
 						.setStyle(style)
 						.setColor(lastState.isSuccess() ? Color.GREEN : Color.RED)
 						.setAutoCancel(false)

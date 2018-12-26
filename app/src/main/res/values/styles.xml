@@ -24,10 +24,6 @@
 
 		<!-- Additionally if you want animations when dialog opening -->
 		<item name="android:windowAnimationStyle">@style/CustomDialogAnimation</item>
-<!--
-		<item name="android:windowEnterAnimation">@anim/slide_left</item>
-		<item name="android:windowExitAnimation">@anim/slide_right</item>
--->
 	</style>
 
 	<style name="CustomDialogAnimation">

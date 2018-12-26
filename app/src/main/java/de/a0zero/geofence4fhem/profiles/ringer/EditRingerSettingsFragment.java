@@ -133,11 +133,13 @@ public class EditRingerSettingsFragment extends Fragment implements SettingsData
 
 	@OnClick(R.id.ringerEnterTest)
 	public void testRingerEnter(View view) {
+		Profile profile = model.getSelected().getValue();
+		writeBack(profile);
+
 		GeofenceActionChangeRingerSettings testAction = new GeofenceActionChangeRingerSettings();
 		LatLng position = new LatLng(0, 0);
-
 		compositeDisposable.add(
-		testAction.enter(new GeofenceDto(position), model.getSelected().getValue(), position)
+		testAction.enter(new GeofenceDto(position), profile, position)
 				.observeOn(Schedulers.io())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(
@@ -149,11 +151,13 @@ public class EditRingerSettingsFragment extends Fragment implements SettingsData
 
 	@OnClick(R.id.ringerLeaveTest)
 	public void testRingerLeave(View view) {
+		Profile profile = model.getSelected().getValue();
+		writeBack(profile);
+
 		GeofenceActionChangeRingerSettings testAction = new GeofenceActionChangeRingerSettings();
 		LatLng position = new LatLng(0, 0);
-
 		compositeDisposable.add(
-				testAction.leave(new GeofenceDto(position), model.getSelected().getValue(), position)
+				testAction.leave(new GeofenceDto(position), profile, position)
 						.observeOn(Schedulers.io())
 						.observeOn(AndroidSchedulers.mainThread())
 						.subscribe(
