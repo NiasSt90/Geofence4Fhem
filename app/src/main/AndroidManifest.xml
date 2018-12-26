@@ -9,37 +9,30 @@
 	<uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
 
 	<application
+			android:name=".App"
 			android:allowBackup="true"
 			android:icon="@drawable/ic_geofence4fhem"
 			android:label="@string/app_name"
 			android:supportsRtl="true"
-			android:name=".app.App"
 			android:theme="@style/AppTheme">
-
 		<meta-data
 				android:name="com.google.android.geo.API_KEY"
 				android:value="@string/google_maps_key"/>
 
-		<activity
-				android:name=".app.MainActivity"
-				android:label="@string/title_activity_main">
+		<activity android:name=".app.MainActivity" android:label="@string/title_activity_main">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
-
 		<activity android:name=".maps.MapsActivity" android:label="@string/title_activity_maps"/>
-		<activity android:name=".profiles.ProfilesActivity"/>
+		<activity android:name=".profiles.ProfilesActivity" android:label="@string/title_activity_profiles"/>
 
-		<receiver
-				android:name=".transition.GeofenceBroadcastReceiver"
-				android:enabled="true"
-				android:exported="true"/>
 		<service android:name=".transition.AddingGeofencesService"/>
 		<service android:name=".transition.TrackingService"/>
 		<service android:name=".transition.UpdateNotificationIntentService"/>
 
+		<receiver android:name=".transition.GeofenceBroadcastReceiver" android:enabled="true" android:exported="true"/>
 		<receiver android:name=".app.BootBroadcastReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED"/>

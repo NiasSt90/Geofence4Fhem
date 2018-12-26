@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.model.LatLng;
-import de.a0zero.geofence4fhem.app.App;
+import de.a0zero.geofence4fhem.App;
 import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
 import de.a0zero.geofence4fhem.data.entities.GeofenceProfileState;
 import de.a0zero.geofence4fhem.data.entities.Profile;

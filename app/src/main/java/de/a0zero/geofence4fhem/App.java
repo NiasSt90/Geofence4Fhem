@@ -1,4 +1,4 @@
-package de.a0zero.geofence4fhem.app;
+package de.a0zero.geofence4fhem;
 
 import android.app.Application;
 import android.util.Log;

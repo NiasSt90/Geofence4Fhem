@@ -11,7 +11,7 @@
 			android:layout_alignParentBottom="true"
 			android:layout_gravity="start|bottom"
 			android:layout_margin="16dp"
-			android:src="@android:drawable/ic_menu_add" />
+			android:src="@drawable/ic_insert_drive_file_white_24dp" />
 
 	<androidx.recyclerview.widget.RecyclerView
 			android:id="@+id/profilesList"

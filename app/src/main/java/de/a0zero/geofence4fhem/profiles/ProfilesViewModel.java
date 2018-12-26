@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import de.a0zero.geofence4fhem.app.App;
+import de.a0zero.geofence4fhem.App;
 import de.a0zero.geofence4fhem.data.dao.GeofenceProfilesDao;
 import de.a0zero.geofence4fhem.data.dao.ProfileDAO;
 import de.a0zero.geofence4fhem.data.entities.GeofenceDto;

@@ -30,7 +30,7 @@
 			android:layout_alignParentBottom="true"
 			android:layout_gravity="start|bottom"
 			android:layout_margin="16dp"
-			android:src="@android:drawable/ic_menu_save"/>
+			android:src="@drawable/ic_save_white_24dp"/>
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 			android:id="@+id/delete"
@@ -40,7 +40,7 @@
 			android:layout_alignParentBottom="true"
 			android:layout_gravity="end|bottom"
 			android:layout_margin="16dp"
-			android:src="@android:drawable/ic_menu_delete"/>
+			android:src="@drawable/ic_delete_forever_white_24dp"/>
 
 	<FrameLayout
 			android:id="@+id/profileData"

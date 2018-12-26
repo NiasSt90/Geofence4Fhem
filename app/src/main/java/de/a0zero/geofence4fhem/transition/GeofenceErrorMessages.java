@@ -21,8 +21,8 @@ import android.content.res.Resources;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
+import de.a0zero.geofence4fhem.App;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.app.App;
 
 
 /**
