@@ -23,7 +23,7 @@ import butterknife.OnClick;
 import com.google.android.material.snackbar.Snackbar;
 import de.a0zero.geofence4fhem.BuildConfig;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.data.Profile;
+import de.a0zero.geofence4fhem.data.entities.Profile;
 import de.a0zero.geofence4fhem.profiles.ProfilesViewModel;
 import de.a0zero.geofence4fhem.profiles.SettingsDataFragment;
 

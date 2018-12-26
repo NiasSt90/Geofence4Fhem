@@ -16,8 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.app.App;
-import de.a0zero.geofence4fhem.data.GeofenceDto;
-import de.a0zero.geofence4fhem.data.GeofenceProfileState;
+import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
+import de.a0zero.geofence4fhem.data.entities.GeofenceProfileState;
 
 import java.util.List;
 

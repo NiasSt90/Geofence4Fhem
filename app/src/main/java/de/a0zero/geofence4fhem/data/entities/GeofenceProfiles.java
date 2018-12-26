@@ -1,4 +1,4 @@
-package de.a0zero.geofence4fhem.data;
+package de.a0zero.geofence4fhem.data.entities;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;

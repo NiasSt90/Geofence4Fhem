@@ -1,7 +1,8 @@
-package de.a0zero.geofence4fhem.data;
+package de.a0zero.geofence4fhem.data.entities;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
+
 
 public class SelectedGeofence {
 

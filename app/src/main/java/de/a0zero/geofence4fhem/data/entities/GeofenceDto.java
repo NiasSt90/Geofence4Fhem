@@ -1,10 +1,9 @@
-package de.a0zero.geofence4fhem.data;
+package de.a0zero.geofence4fhem.data.entities;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 import android.graphics.Color;
 import androidx.annotation.NonNull;
-
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;

@@ -7,11 +7,19 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
+import de.a0zero.geofence4fhem.data.dao.GeofenceDao;
+import de.a0zero.geofence4fhem.data.dao.GeofenceProfileStateDao;
+import de.a0zero.geofence4fhem.data.dao.GeofenceProfilesDao;
+import de.a0zero.geofence4fhem.data.dao.ProfileDAO;
+import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
+import de.a0zero.geofence4fhem.data.entities.GeofenceProfileState;
+import de.a0zero.geofence4fhem.data.entities.GeofenceProfiles;
+import de.a0zero.geofence4fhem.data.entities.Profile;
 
 
 @Database(
 		entities = {Profile.class, GeofenceDto.class, GeofenceProfiles.class,
-							 GeofenceProfileState.class},
+						GeofenceProfileState.class},
 		version = 7)
 @TypeConverters(TypeConvertes.class)
 public abstract class GeofenceDatabase extends RoomDatabase {
@@ -21,11 +29,11 @@ public abstract class GeofenceDatabase extends RoomDatabase {
 
 	public abstract ProfileDAO profileDAO();
 
-	public abstract GeofenceRepo geofenceRepo();
+	public abstract GeofenceDao geofenceRepo();
 
-	public abstract GeofenceProfilesRepo geofenceProfilesRepo();
+	public abstract GeofenceProfilesDao geofenceProfilesRepo();
 
-	public abstract GeofenceProfileStateRepo geofenceProfileStateRepo();
+	public abstract GeofenceProfileStateDao geofenceProfileStateRepo();
 
 
 	private static final Object sLock = new Object();
@@ -46,6 +54,11 @@ public abstract class GeofenceDatabase extends RoomDatabase {
 			}
 			return INSTANCE;
 		}
+	}
+
+	//TODO: replace Dao usage with injections to avoid these assignee her
+	public static void setTestDB(GeofenceDatabase db) {
+		INSTANCE = db;
 	}
 
 

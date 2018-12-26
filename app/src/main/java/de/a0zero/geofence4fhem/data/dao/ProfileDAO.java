@@ -1,4 +1,4 @@
-package de.a0zero.geofence4fhem.data;
+package de.a0zero.geofence4fhem.data.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -7,6 +7,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
+import de.a0zero.geofence4fhem.data.entities.Profile;
+import de.a0zero.geofence4fhem.data.entities.SelectedGeofence;
 
 import java.util.List;
 
@@ -14,14 +16,8 @@ import java.util.List;
 @Dao
 public abstract class ProfileDAO {
 
-	@Query("SELECT * FROM Profile WHERE type = :type")
-	public abstract List<Profile> listAllByType(ProfileType type);
-
 	@Query("SELECT * FROM Profile WHERE id = :id")
 	public abstract Profile findById(int id);
-
-	@Query("SELECT * FROM Profile")
-	public abstract List<Profile> listAll();
 
 	@Query("SELECT * FROM Profile")
 	public abstract LiveData<List<Profile>> liveList();

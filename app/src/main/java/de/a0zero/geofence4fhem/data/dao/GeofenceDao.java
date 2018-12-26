@@ -1,4 +1,4 @@
-package de.a0zero.geofence4fhem.data;
+package de.a0zero.geofence4fhem.data.dao;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -6,12 +6,13 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
+import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
 
 import java.util.List;
 
 
 @Dao
-public interface GeofenceRepo {
+public interface GeofenceDao {
 
 	@Query("SELECT * FROM GeofenceDto")
 	List<GeofenceDto> listAll();

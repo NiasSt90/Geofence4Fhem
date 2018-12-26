@@ -1,4 +1,4 @@
-package de.a0zero.geofence4fhem.data;
+package de.a0zero.geofence4fhem.data.entities;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
@@ -56,7 +56,7 @@ public class GeofenceProfileState {
 
 	public GeofenceProfileState assignResponse(GeofenceAction.ActionResponse response) {
 		this.message = response.message();
-		this.success = true;
+		this.success = !(response instanceof GeofenceAction.ErrorActionResponse);
 		return this;
 	}
 
@@ -141,5 +141,19 @@ public class GeofenceProfileState {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+
+	@Override
+	public String toString() {
+		return "GeofenceProfileState{" +
+				 "time=" + time +
+				 ", profileId=" + profileId +
+				 ", geofenceId='" + geofenceId + '\'' +
+				 ", location=" + location +
+				 ", transition=" + transition +
+				 ", success=" + success +
+				 ", message='" + message + '\'' +
+				 '}';
 	}
 }

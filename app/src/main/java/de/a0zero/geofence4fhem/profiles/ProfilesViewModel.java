@@ -6,12 +6,12 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import de.a0zero.geofence4fhem.app.App;
-import de.a0zero.geofence4fhem.data.GeofenceDto;
-import de.a0zero.geofence4fhem.data.GeofenceProfiles;
-import de.a0zero.geofence4fhem.data.GeofenceProfilesRepo;
-import de.a0zero.geofence4fhem.data.Profile;
-import de.a0zero.geofence4fhem.data.ProfileDAO;
-import de.a0zero.geofence4fhem.data.SelectedGeofence;
+import de.a0zero.geofence4fhem.data.dao.GeofenceProfilesDao;
+import de.a0zero.geofence4fhem.data.dao.ProfileDAO;
+import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
+import de.a0zero.geofence4fhem.data.entities.GeofenceProfiles;
+import de.a0zero.geofence4fhem.data.entities.Profile;
+import de.a0zero.geofence4fhem.data.entities.SelectedGeofence;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class ProfilesViewModel extends AndroidViewModel {
 
 	private final ProfileDAO profileDAO;
 
-	private final GeofenceProfilesRepo geofenceProfilesRepo;
+	private final GeofenceProfilesDao geofenceProfilesRepo;
 
 	private LiveData<List<Profile>> profiles;
 

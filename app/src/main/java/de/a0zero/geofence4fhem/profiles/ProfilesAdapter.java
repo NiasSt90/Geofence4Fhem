@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.data.Profile;
+import de.a0zero.geofence4fhem.data.entities.Profile;
 
 import java.util.ArrayList;
 import java.util.List;

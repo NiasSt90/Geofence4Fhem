@@ -1,5 +1,6 @@
 package de.a0zero.geofence4fhem.data;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.profiles.GeofenceAction;
@@ -13,14 +14,15 @@ public enum ProfileType {
 
 	FHEM_NOTIFY {
 		@Override
-		public Fragment getEditorFragment() {
+		public Fragment editor() {
 			return new EditFhemSettingsFragment();
 		}
 
 
+		@NonNull
 		@Override
-		public Class<? extends GeofenceAction> getGeofenceActionClass() {
-			return GeofenceActionInformFhem.class;
+		public GeofenceAction action() {
+			return new GeofenceActionInformFhem();
 		}
 
 
@@ -38,14 +40,15 @@ public enum ProfileType {
 
 	RINGER_SETTINGS {
 		@Override
-		public Fragment getEditorFragment() {
+		public Fragment editor() {
 			return new EditRingerSettingsFragment();
 		}
 
 
+		@NonNull
 		@Override
-		public Class<? extends GeofenceAction> getGeofenceActionClass() {
-			return GeofenceActionChangeRingerSettings.class;
+		public GeofenceAction action() {
+			return new GeofenceActionChangeRingerSettings();
 		}
 
 
@@ -62,9 +65,10 @@ public enum ProfileType {
 	};
 
 
-	public abstract Fragment getEditorFragment();
+	public abstract Fragment editor();
 
-	public abstract Class<? extends GeofenceAction> getGeofenceActionClass();
+	@NonNull
+	public abstract GeofenceAction action();
 
 	public abstract int getLabelRes();
 

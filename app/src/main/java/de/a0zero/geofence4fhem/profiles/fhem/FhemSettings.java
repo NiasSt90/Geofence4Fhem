@@ -2,10 +2,11 @@ package de.a0zero.geofence4fhem.profiles.fhem;
 
 import com.google.gson.JsonObject;
 import de.a0zero.geofence4fhem.data.ProfileDataMapper;
+import de.a0zero.geofence4fhem.data.entities.Profile;
 
 
 /**
- * Map the custom data of the {@link de.a0zero.geofence4fhem.data.Profile#data} to the individual properties
+ * Map the custom data of the {@link Profile#data} to the individual properties
  */
 public class FhemSettings implements ProfileDataMapper {
 

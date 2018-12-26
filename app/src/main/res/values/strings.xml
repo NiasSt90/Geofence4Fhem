@@ -59,6 +59,12 @@
 	<string name="ringer_vibrate">Vibrate</string>
 	<string name="ringer_normal">Normal</string>
 
+	<string name="ringer_mode_switch_silent">Ringer silent</string>
+	<string name="ringer_mode_switch_vibrate">Ringer vibrate</string>
+	<string name="ringer_mode_switch_normal">Ringer normal</string>
+	<string name="ringer_mode_switch_unknown">unknown ringer mode</string>
+	<string name="ringer_mode_switch_unchanged">Ringer unchanged</string>
+
 	<string name="profile_type_fhem">FHEM-Geofancy Call</string>
 	<string name="profile_type_ringer">Ringer settings</string>
 </resources>

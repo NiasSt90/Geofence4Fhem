@@ -8,6 +8,9 @@ import com.google.gson.JsonObject;
 import java.util.Date;
 
 
+/**
+ * room-db type converters
+ */
 public class TypeConvertes {
 
 	private static Gson gson = new Gson();

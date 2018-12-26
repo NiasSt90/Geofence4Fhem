@@ -3,10 +3,10 @@ package de.a0zero.geofence4fhem.app;
 import android.app.Application;
 import android.util.Log;
 import de.a0zero.geofence4fhem.data.GeofenceDatabase;
-import de.a0zero.geofence4fhem.data.GeofenceProfileStateRepo;
-import de.a0zero.geofence4fhem.data.GeofenceProfilesRepo;
-import de.a0zero.geofence4fhem.data.GeofenceRepo;
-import de.a0zero.geofence4fhem.data.ProfileDAO;
+import de.a0zero.geofence4fhem.data.dao.GeofenceDao;
+import de.a0zero.geofence4fhem.data.dao.GeofenceProfileStateDao;
+import de.a0zero.geofence4fhem.data.dao.GeofenceProfilesDao;
+import de.a0zero.geofence4fhem.data.dao.ProfileDAO;
 
 import static android.content.ContentValues.TAG;
 
@@ -18,7 +18,7 @@ public class App extends Application {
         return mInstance;
     }
 
-    public static GeofenceRepo geofenceRepo() {
+    public static GeofenceDao geofenceRepo() {
         return GeofenceDatabase.getInstance(mInstance).geofenceRepo();
     }
 
@@ -26,11 +26,11 @@ public class App extends Application {
         return GeofenceDatabase.getInstance(mInstance).profileDAO();
     }
 
-    public static GeofenceProfilesRepo geofenceActionRepo() {
+    public static GeofenceProfilesDao geofenceActionRepo() {
         return GeofenceDatabase.getInstance(mInstance).geofenceProfilesRepo();
     }
 
-    public static GeofenceProfileStateRepo geofenceStateRepo() {
+    public static GeofenceProfileStateDao geofenceStateRepo() {
     	return GeofenceDatabase.getInstance(mInstance).geofenceProfileStateRepo();
 	 }
 

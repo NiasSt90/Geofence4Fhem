@@ -18,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.data.Profile;
+import de.a0zero.geofence4fhem.data.entities.Profile;
 
 
 public class ProfileEditorFragment extends DialogFragment {
@@ -79,7 +79,7 @@ public class ProfileEditorFragment extends DialogFragment {
 		profileName.setText(profile.getLabel());
 		getChildFragmentManager()
 				.beginTransaction()
-				.add(R.id.profileData, profile.getType().getEditorFragment())
+				.add(R.id.profileData, profile.getType().editor())
 				.commit();
 	}
 

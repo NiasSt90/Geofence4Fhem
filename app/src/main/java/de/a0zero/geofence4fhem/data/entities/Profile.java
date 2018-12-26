@@ -1,9 +1,12 @@
-package de.a0zero.geofence4fhem.data;
+package de.a0zero.geofence4fhem.data.entities;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 import com.google.gson.JsonObject;
+import de.a0zero.geofence4fhem.data.ProfileDataMapper;
+import de.a0zero.geofence4fhem.data.ProfileType;
+import de.a0zero.geofence4fhem.data.TypeConvertes;
 import de.a0zero.geofence4fhem.profiles.GeofenceAction;
 
 import java.lang.reflect.InvocationTargetException;

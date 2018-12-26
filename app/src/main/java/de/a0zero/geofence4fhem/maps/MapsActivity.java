@@ -1,19 +1,19 @@
 package de.a0zero.geofence4fhem.maps;
 
 import android.app.AlertDialog;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
-import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,22 +24,21 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import de.a0zero.geofence4fhem.R;
+import de.a0zero.geofence4fhem.data.dao.GeofenceDao;
+import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.data.GeofenceDto;
-
 /**
  * create/edit/delete Geofences on a map....<br/>
  * maps-api key needed. see build file where to put it.
  * <p>
- * finally the created geofences are save to (shared-prefs) {@link de.a0zero.geofence4fhem.data.GeofenceRepo}
+ * finally the created geofences are save to (shared-prefs) {@link GeofenceDao}
  */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 

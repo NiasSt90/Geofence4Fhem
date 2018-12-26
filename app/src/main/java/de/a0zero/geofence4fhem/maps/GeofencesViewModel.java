@@ -5,15 +5,15 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import de.a0zero.geofence4fhem.app.App;
-import de.a0zero.geofence4fhem.data.GeofenceDto;
-import de.a0zero.geofence4fhem.data.GeofenceRepo;
+import de.a0zero.geofence4fhem.data.dao.GeofenceDao;
+import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
 
 import java.util.List;
 
 
 class GeofencesViewModel extends AndroidViewModel {
 
-    private final GeofenceRepo geofenceRepo;
+    private final GeofenceDao geofenceRepo;
 
     private final MutableLiveData<List<GeofenceDto>> geofences = new MutableLiveData<>();
 

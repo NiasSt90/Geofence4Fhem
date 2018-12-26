@@ -11,7 +11,7 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Task;
 import de.a0zero.geofence4fhem.app.App;
-import de.a0zero.geofence4fhem.data.GeofenceDto;
+import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
 
 import java.util.ArrayList;
 import java.util.List;

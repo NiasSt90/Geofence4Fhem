@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.data.Profile;
 import de.a0zero.geofence4fhem.data.ProfileType;
+import de.a0zero.geofence4fhem.data.entities.Profile;
 
 
 public class ProfilesActivity extends AppCompatActivity implements ProfileOnClickListener {

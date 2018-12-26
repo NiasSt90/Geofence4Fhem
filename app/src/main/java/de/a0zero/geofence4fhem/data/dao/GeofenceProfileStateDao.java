@@ -1,15 +1,16 @@
-package de.a0zero.geofence4fhem.data;
+package de.a0zero.geofence4fhem.data.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import de.a0zero.geofence4fhem.data.entities.GeofenceProfileState;
 
 import java.util.List;
 
 
 @Dao
-public interface GeofenceProfileStateRepo {
+public interface GeofenceProfileStateDao {
 
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	void add(GeofenceProfileState state);

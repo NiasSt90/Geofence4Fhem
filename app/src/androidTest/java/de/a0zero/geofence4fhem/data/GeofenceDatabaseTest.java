@@ -11,6 +11,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 import com.google.android.gms.maps.model.LatLng;
 import de.a0zero.geofence4fhem.LiveDataTestUtil;
+import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
+import de.a0zero.geofence4fhem.data.entities.GeofenceProfiles;
+import de.a0zero.geofence4fhem.data.entities.Profile;
+import de.a0zero.geofence4fhem.data.entities.SelectedGeofence;
 import de.a0zero.geofence4fhem.profiles.fhem.FhemSettings;
 import org.junit.After;
 import org.junit.Before;
@@ -92,15 +96,15 @@ public class GeofenceDatabaseTest {
 
 		GeofenceDatabase newDB = getMigratedRoomDatabase();
 		Profile profile = newDB.profileDAO().findById(1);
-		assertEquals(profile.label, "myLabel");
-		assertEquals(profile.type, ProfileType.FHEM_NOTIFY);
+		assertEquals(profile.getLabel(), "myLabel");
+		assertEquals(profile.getType(), ProfileType.FHEM_NOTIFY);
 		assertEquals(profile.data(FhemSettings.class).getFhemUrl(), "https://example.org/fhem/geo");
 		assertEquals(profile.data(FhemSettings.class).getUsername(), "myLogin");
 		assertEquals(profile.data(FhemSettings.class).getPassword(), "myPassword");
 		assertEquals(profile.data(FhemSettings.class).getDeviceUUID(), "device12345");
 
 		//check associations
-		assertEquals(1, newDB.geofenceProfilesRepo().getProfilesForGeofence("myID").size());
+		newDB.geofenceProfilesRepo().listProfilesForGeofence("myID").test().assertValueCount(1);
 		assertEquals(1, newDB.geofenceProfileStateRepo().listLast(10).size());
 	}
 

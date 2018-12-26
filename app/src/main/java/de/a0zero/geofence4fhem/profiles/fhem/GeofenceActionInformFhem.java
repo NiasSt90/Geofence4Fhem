@@ -1,12 +1,11 @@
 package de.a0zero.geofence4fhem.profiles.fhem;
 
-import android.content.Context;
 import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
-import de.a0zero.geofence4fhem.data.GeofenceDto;
-import de.a0zero.geofence4fhem.data.Profile;
+import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
+import de.a0zero.geofence4fhem.data.entities.Profile;
 import de.a0zero.geofence4fhem.profiles.GeofenceAction;
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -29,58 +28,65 @@ import java.util.TimeZone;
  *     &longitude=14.321822
  *     &device=$DEVICEUUID
  */
-public class GeofenceActionInformFhem implements GeofenceAction<Profile> {
+public class GeofenceActionInformFhem implements GeofenceAction {
 
-    private static final String TAG = GeofenceActionInformFhem.class.getSimpleName();
-    
-    private final OkHttpClient client;
+	private static final String TAG = GeofenceActionInformFhem.class.getSimpleName();
 
-    public GeofenceActionInformFhem(Context context) {
-        client = new OkHttpClient();
-    }
+	private final OkHttpClient client;
 
-    @Override
-    public Observable<ActionResponse> enter(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition) {
-        return execute(geofenceDto, profile, currentPosition, true);
-    }
 
-    @Override
-    public Observable<ActionResponse> leave(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition) {
-        return execute(geofenceDto, profile, currentPosition, false);
-    }
+	public GeofenceActionInformFhem() {
+		client = new OkHttpClient();
+	}
 
-    public static String toISO8601UTC(Date date) {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        df.setTimeZone(tz);
-        return df.format(date);
-    }
 
-    private Observable<ActionResponse> execute(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition, boolean enterZone) {
-		 FhemSettings fhemSettings = profile.data(FhemSettings.class);
-		 HttpUrl.Builder builder = HttpUrl.parse(fhemSettings.getFhemUrl()).newBuilder();
-        HttpUrl httpUrl = builder.addQueryParameter("id", fhemSettings.getDeviceUUID())
-                .addQueryParameter("device", fhemSettings.getDeviceUUID())
-                .addQueryParameter("entry", enterZone ? "1":"0")
-                .addQueryParameter("name", geofenceDto.getName())
-                .addQueryParameter("date", toISO8601UTC(new Date()))
-                .addQueryParameter("latitude", Double.toString(currentPosition.latitude))
-                .addQueryParameter("longitude", Double.toString(currentPosition.longitude))
-                .build();
-        String credentials = Credentials.basic(
-				  fhemSettings.getUsername(), fhemSettings.getPassword());
-        Request httpRequest = new Request.Builder()
-                .url(httpUrl.url())
-                .header("content-type", "application/json")
-                .header("Authorization", credentials)
-                .build();
-        return Observable.fromCallable(() -> client.newCall(httpRequest).execute())
-                .doOnNext(response -> {
-                    if(!response.isSuccessful()) {
-                        Log.d(TAG, "Error on execute:" + httpUrl.toString());
-                        throw new RuntimeException("FHEM notify for " + httpUrl.toString() + " = <" + response.message() + ">");
-                    }
-                })
-                .map(response -> response::message);
-    }
+	@Override
+	public Flowable<ActionResponse> enter(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition) {
+		return execute(geofenceDto, profile, currentPosition, true);
+	}
+
+
+	@Override
+	public Flowable<ActionResponse> leave(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition) {
+		return execute(geofenceDto, profile, currentPosition, false);
+	}
+
+
+	public static String toISO8601UTC(Date date) {
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		df.setTimeZone(tz);
+		return df.format(date);
+	}
+
+
+	private Flowable<ActionResponse> execute(GeofenceDto geofenceDto, Profile profile, LatLng currentPosition,
+			boolean enterZone) {
+		FhemSettings fhemSettings = profile.data(FhemSettings.class);
+		HttpUrl.Builder builder = HttpUrl.parse(fhemSettings.getFhemUrl()).newBuilder();
+		HttpUrl httpUrl = builder.addQueryParameter("id", fhemSettings.getDeviceUUID())
+				.addQueryParameter("device", fhemSettings.getDeviceUUID())
+				.addQueryParameter("entry", enterZone ? "1" : "0")
+				.addQueryParameter("name", geofenceDto.getName())
+				.addQueryParameter("date", toISO8601UTC(new Date()))
+				.addQueryParameter("latitude", Double.toString(currentPosition.latitude))
+				.addQueryParameter("longitude", Double.toString(currentPosition.longitude))
+				.build();
+		String credentials = Credentials.basic(
+				fhemSettings.getUsername(), fhemSettings.getPassword());
+		Request httpRequest = new Request.Builder()
+				.url(httpUrl.url())
+				.header("content-type", "application/json")
+				.header("Authorization", credentials)
+				.build();
+		return Flowable.fromCallable(() -> client.newCall(httpRequest).execute())
+				.doOnNext(response -> {
+					if (!response.isSuccessful()) {
+						Log.d(TAG, "Error on execute:" + httpUrl.toString());
+						throw new RuntimeException(
+								"FHEM notify for " + httpUrl.toString() + " = <" + response.message() + ">");
+					}
+				})
+				.map(response -> response::message);
+	}
 }

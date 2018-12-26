@@ -8,7 +8,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import de.a0zero.geofence4fhem.R;
-import de.a0zero.geofence4fhem.data.SelectedGeofence;
+import de.a0zero.geofence4fhem.data.entities.SelectedGeofence;
 
 import java.util.ArrayList;
 import java.util.List;
