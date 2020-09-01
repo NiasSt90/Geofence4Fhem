@@ -4,9 +4,10 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.os.Build;
 import android.provider.Settings;
+
 import com.google.android.gms.maps.model.LatLng;
+
 import de.a0zero.geofence4fhem.App;
 import de.a0zero.geofence4fhem.R;
 import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
@@ -34,8 +35,10 @@ public class GeofenceActionChangeRingerSettings implements GeofenceAction {
 	private ActionResponse changeRingtone(Integer ringerMode) {
 		NotificationManager nm =
 				(NotificationManager) App.instance().getSystemService(Context.NOTIFICATION_SERVICE);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !nm.isNotificationPolicyAccessGranted()) {
-			App.instance().startActivity(new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS));
+		if (!nm.isNotificationPolicyAccessGranted()) {
+			App.instance().startActivity(
+					new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+					.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 			return () -> "Missing Permission NOTIFICATION_POLICY_ACCESS_SETTINGS";
 		}
 		if (ringerMode != null) {
@@ -64,7 +67,7 @@ public class GeofenceActionChangeRingerSettings implements GeofenceAction {
 	private void setRingerMode(Context context, int mode) {
 		NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && nm.isNotificationPolicyAccessGranted()) {
+		if (nm.isNotificationPolicyAccessGranted()) {
 			audioManager.setRingerMode(mode);
 		}
 	}
