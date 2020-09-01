@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -70,7 +71,7 @@ public class ProfileEditorFragment extends DialogFragment {
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
 		recyclerView.setAdapter(selectedGeofenceAdapter);
 
-		model = ViewModelProviders.of(getActivity()).get(ProfilesViewModel.class);
+		model = new ViewModelProvider(getActivity()).get(ProfilesViewModel.class);
 		model.getSelected().observe(this, this::loadSelected);
 	}
 

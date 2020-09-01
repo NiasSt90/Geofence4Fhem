@@ -11,7 +11,7 @@ import de.a0zero.geofence4fhem.data.entities.GeofenceDto;
 import java.util.List;
 
 
-class GeofencesViewModel extends AndroidViewModel {
+public class GeofencesViewModel extends AndroidViewModel {
 
     private final GeofenceDao geofenceRepo;
 

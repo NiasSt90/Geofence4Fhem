@@ -77,10 +77,10 @@
 			</EditText>
 		</com.google.android.material.textfield.TextInputLayout>
 		<Button
-				android:id="@+id/requestDeviceUUID"
+				android:id="@+id/deviceUUID"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="fetch"
+				android:text="generate"
 				android:onClick="requestDeviceUUID"/>
 	</LinearLayout>
 

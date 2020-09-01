@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -73,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         getLocationPermission();
-        model = ViewModelProviders.of(this).get(GeofencesViewModel.class);
+        model = new ViewModelProvider(this).get(GeofencesViewModel.class);
         fabSaveAll.setOnClickListener(event -> model.saveGeofences());
         markerEditButton.setOnClickListener(this::onClickEdiutGeofenceButton);
         markerDelButton.setOnClickListener(this::onClickDeleteGeofenceButton);

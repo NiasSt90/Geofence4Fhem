@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,8 +51,8 @@ public class EditRingerSettingsFragment extends Fragment implements SettingsData
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		ButterKnife.bind(this, view);
-		model = ViewModelProviders.of(getActivity()).get(ProfilesViewModel.class);
-		model.getSelected().observe(this, this::loadSelected);
+		model = new ViewModelProvider(getActivity()).get(ProfilesViewModel.class);
+		model.getSelected().observe(getViewLifecycleOwner(), this::loadSelected);
 	}
 
 

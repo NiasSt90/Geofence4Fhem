@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.a0zero.geofence4fhem.R;
@@ -38,7 +40,7 @@ public class CreateZoneDialog extends AppCompatDialogFragment {
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.zone_create, null);
         ButterKnife.bind(this, dialogView);
 
-        model = ViewModelProviders.of(getActivity()).get(GeofencesViewModel.class);
+        model = new ViewModelProvider(getActivity()).get(GeofencesViewModel.class);
         model.getSelected().observe(this, this::initDialogWithData);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

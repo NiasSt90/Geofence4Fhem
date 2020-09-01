@@ -109,14 +109,14 @@ public class MainActivity extends AppCompatActivity {
 	 */
 	private boolean checkPermissions() {
 		int permissionState = ActivityCompat.checkSelfPermission(this,
-				Manifest.permission.ACCESS_FINE_LOCATION);
+				Manifest.permission.ACCESS_BACKGROUND_LOCATION);
 		return permissionState == PackageManager.PERMISSION_GRANTED;
 	}
 
 
 	private void requestPermissions() {
 		boolean showRequestPermUI = ActivityCompat.shouldShowRequestPermissionRationale(this,
-				Manifest.permission.ACCESS_FINE_LOCATION);
+				Manifest.permission.ACCESS_BACKGROUND_LOCATION);
 		if (showRequestPermUI) {
 			showSnackbar(R.string.permission_rationale, android.R.string.ok, view -> startRequestPermission());
 		}
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void startRequestPermission() {
 		ActivityCompat.requestPermissions(MainActivity.this,
-				new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+				new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
 				REQUEST_PERMISSIONS_REQUEST_CODE);
 	}
 
@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
 			@NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		Log.i(TAG, "onRequestPermissionResult");
 		if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
 			if (grantResults.length <= 0) {

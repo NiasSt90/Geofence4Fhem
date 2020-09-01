@@ -5,6 +5,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,7 +40,7 @@ public class ProfilesActivity extends AppCompatActivity implements ProfileOnClic
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
 		recyclerView.setAdapter(profilesAdapter);
 
-		model = ViewModelProviders.of(this).get(ProfilesViewModel.class);
+		model = new ViewModelProvider(this).get(ProfilesViewModel.class);
 		model.getAllProfiles().observe(this, profiles -> profilesAdapter.setData(profiles));
 	}
 
