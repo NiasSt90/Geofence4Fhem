@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -29,6 +30,9 @@ public class CreateZoneDialog extends AppCompatDialogFragment {
 
     @BindView(R.id.zoneRadiusText)
     EditText zoneRadiusEditView;
+
+    @BindView(R.id.useDwell)
+    CheckBox useDwellView;
 
     private GeofencesViewModel model;
 
@@ -56,6 +60,7 @@ public class CreateZoneDialog extends AppCompatDialogFragment {
             zoneTitleEditView.setText(geofence.getTitle());
             zoneNameEditView.setText(geofence.getName());
             zoneRadiusEditView.setText(String.valueOf(geofence.getRadius()));
+            useDwellView.setChecked(geofence.isUseDwell());
             this.geofence = geofence;
         }
     }
@@ -63,7 +68,8 @@ public class CreateZoneDialog extends AppCompatDialogFragment {
     private void createZone() {
         geofence.setTitle(zoneTitleEditView.getText().toString());
         geofence.setName(zoneNameEditView.getText().toString());
-        geofence.setRadius(Integer.valueOf(zoneRadiusEditView.getText().toString()));
+        geofence.setRadius(Integer.parseInt(zoneRadiusEditView.getText().toString()));
+        geofence.setUseDwell(useDwellView.isChecked());
         model.updated(geofence);
     }
 

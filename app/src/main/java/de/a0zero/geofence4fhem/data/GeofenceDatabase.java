@@ -20,7 +20,7 @@ import de.a0zero.geofence4fhem.data.entities.Profile;
 @Database(
 		entities = {Profile.class, GeofenceDto.class, GeofenceProfiles.class,
 						GeofenceProfileState.class},
-		version = 7)
+		version = 8)
 @TypeConverters(TypeConvertes.class)
 public abstract class GeofenceDatabase extends RoomDatabase {
 
@@ -49,6 +49,7 @@ public abstract class GeofenceDatabase extends RoomDatabase {
 						.addMigrations(MIGRATION_3_4)
 						.addMigrations(MIGRATION_4_6)
 						.addMigrations(MIGRATION_6_7)
+						.addMigrations(MIGRATION_7_8)
 						//.fallbackToDestructiveMigration()
 						.build();
 			}
@@ -135,6 +136,16 @@ public abstract class GeofenceDatabase extends RoomDatabase {
 			//remove old table
 			db.execSQL("DROP TABLE IF EXISTS `FhemProfile`");
 
+			db.setTransactionSuccessful();
+			db.endTransaction();
+		}
+	};
+
+	static final Migration MIGRATION_7_8 = new Migration(7, 8) {
+		@Override
+		public void migrate(SupportSQLiteDatabase db) {
+			db.beginTransaction();
+			db.execSQL("ALTER TABLE `GeofenceDto` ADD COLUMN `useDwell` INTEGER NOT NULL DEFAULT(1)");
 			db.setTransactionSuccessful();
 			db.endTransaction();
 		}

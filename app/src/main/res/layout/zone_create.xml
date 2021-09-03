@@ -65,4 +65,10 @@
         android:imeOptions="actionDone|actionGo|actionNext|actionPrevious"
         android:inputType="numberDecimal" />
 
+    <CheckBox
+          android:id="@+id/useDwell"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Use 'dwell' Signal" />
+
 </LinearLayout>

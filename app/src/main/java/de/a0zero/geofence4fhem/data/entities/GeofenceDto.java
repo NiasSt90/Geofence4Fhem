@@ -27,6 +27,8 @@ public class GeofenceDto implements Serializable {
 
     private int radius = 100;
 
+    private boolean useDwell = true;
+
     public GeofenceDto(LatLng position) {
         this.id = UUID.randomUUID().toString();
         this.position = position;
@@ -71,6 +73,17 @@ public class GeofenceDto implements Serializable {
     public void setRadius(int radius) {
         this.radius = radius;
     }
+
+
+    public boolean isUseDwell() {
+        return useDwell;
+    }
+
+
+    public void setUseDwell(boolean useDwell) {
+        this.useDwell = useDwell;
+    }
+
 
     //TODO: move into maps package
     public MarkerOptions createMarkerOptions() {

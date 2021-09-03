@@ -41,7 +41,12 @@ public class GeofenceProfileExecutor {
 				resultAction = profileAction.enter(fence, profile, pos);
 				break;
 			case Geofence.GEOFENCE_TRANSITION_DWELL:
-				resultAction = profileAction.enter(fence, profile, pos);
+				if (fence.isUseDwell()) {
+					resultAction = profileAction.enter(fence, profile, pos);
+				}
+				else {
+					resultAction = Flowable.just(() -> "NoOp");
+				}
 				break;
 			case Geofence.GEOFENCE_TRANSITION_EXIT:
 				resultAction = profileAction.leave(fence, profile, pos);
